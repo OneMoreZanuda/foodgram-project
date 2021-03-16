@@ -8,7 +8,9 @@
 		<meta http-equiv="X-UA-Compatible" content="ie=edge">
 		<title>{% block title %}Title{% endblock %}</title>
 		{% load static %}
-		<link rel="stylesheet" href="{% static 'recipes/pages/index.css' %}">
+		{% block link_css %}
+		<!-- <link rel="stylesheet" href="{% static 'path-to-css' %}"> -->
+		{% endblock %}
 	</head>
 
 	<body class="body">

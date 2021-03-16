@@ -4,15 +4,17 @@
 	<div class="card__body">
 		<a class="card__title link" href="#" target="_blank">{{ recipe.title }}</a>
 		<ul class="card__items">
-			{% for tag in recipe.tags.all %}
-				{%if tag.name == "Завтрак" %}
-					<li class="card__item"><span class="badge badge_style_orange">Завтрак</span></li>
+
+			{% for tag_id, tag_name in recipe.tags.choices.items %}
+				{% if tag_id in recipe.tags %}
+					<li class="card__item">
+						<span class="badge badge_style_{% cycle 'orange' 'green' 'purple'%}">
+							{{ tag_name }}
+						</span>
+					</li>
 				{% endif %}
 			{% endfor %}
-<!-- 			{% for tag in recipe.tags.all %}
-				<li class="card__item"><span class="badge badge_style_green">Обед</span></li>
-			{% endfor %}		
-			<li class="card__item"><span class="badge badge_style_purple">Ужин</span></li> -->
+
 		</ul>
 		<div class="card__items card__items_column">
 			<p class="card__text"><span class="icon-time"></span> {{ recipe.time_for_preparing }} мин.</p>

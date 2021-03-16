@@ -41,9 +41,9 @@ class FoodProduct(models.Model):
 #         return self.name
 
 
-TAGS = ((1, 'Завтрак'),
-        (2, 'Обед'),
-        (3, 'Ужин'))
+TAGS = (('breakfast', 'Завтрак'),
+        ('lunch', 'Обед'),
+        ('dinner', 'Ужин'))
 
 
 class Recipe(models.Model):
