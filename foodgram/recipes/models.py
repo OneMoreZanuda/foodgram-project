@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models.signals import post_delete, post_init
+from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
+from multiselectfield import MultiSelectField
 
 
 User = get_user_model()
@@ -26,29 +27,37 @@ class FoodProduct(models.Model):
         return self.name
 
 
-class Tag(models.Model):
-    class MealType(models.TextChoices):
-        BREAKFAST = 'Завтрак'
-        LUNCH = 'Обед'
-        DINNER = 'Ужин'
+# class Tag(models.Model):
+#     class MealType(models.TextChoices):
+#         BREAKFAST = 'Завтрак'
+#         LUNCH = 'Обед'
+#         DINNER = 'Ужин'
 
-    name = models.CharField(
-        max_length=7, choices=MealType.choices, default=MealType.LUNCH
-    )
+#     name = models.CharField(
+#         max_length=7, choices=MealType.choices, default=MealType.LUNCH
+#     )
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
+
+
+TAGS = ((1, 'Завтрак'),
+        (2, 'Обед'),
+        (3, 'Ужин'))
 
 
 class Recipe(models.Model):
-    _real_author_name = models.CharField(max_length=150, editable=False)
+    _real_author_name = models.CharField(
+        max_length=150, editable=False, default='# not defined #'
+    )
     title = models.CharField(max_length=200)
     author = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user),
                                related_name='recipes')
     # image = models.ImageField(upload_to='recipes/')
     text = models.TextField()
     ingredients = models.ManyToManyField(FoodProduct, through='Ingredient')
-    tags = models.ManyToManyField(Tag)
+    # tags = models.ManyToManyField(Tag)
+    tags = MultiSelectField(choices=TAGS, default=2)
     time_for_preparing = models.PositiveSmallIntegerField()
 
     class Meta:
@@ -59,9 +68,13 @@ class Recipe(models.Model):
         return self.title
 
 
-@receiver(post_init, sender=Recipe)
-def init_real_author_name(sender, instance, **kwargs):
-    instance._real_author_name = instance.author.username if hasattr(instance, "author") else 'not defined'
+@receiver(pre_save, sender=Recipe)
+def init_real_author_name(sender, instance, *args, **kwargs):
+    if instance._real_author_name != '# not defined #':
+        return
+
+    if hasattr(instance, "author") and instance.author is not None:
+        instance._real_author_name = instance.author.username
 
 
 class Unit(models.Model):
