@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport"
+			  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, 	minimum-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>{% block title %}Title{% endblock %}</title>
+		{% load static %}
+		<link rel="stylesheet" href="{% static 'recipes/pages/index.css' %}">
+	</head>
+
+	<body class="body">
+		<header class="header">
+			{% block nav %}
+			<!-- Панель навигации -->
+			{% endblock nav %}
+		</header>
+		<main class="main container">
+			{% block content %}
+			<!-- Содержимое страницы -->
+			{% endblock content %}
+		</main>
+		{% include 'includes/footer.html' %}
+		{% block scripts %}
+		{% endblock scripts %}
+	</body>
+
+</html>

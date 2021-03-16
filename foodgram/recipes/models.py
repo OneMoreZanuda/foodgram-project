@@ -48,7 +48,7 @@ class Recipe(models.Model):
     # image = models.ImageField(upload_to='recipes/')
     text = models.TextField()
     ingredients = models.ManyToManyField(FoodProduct, through='Ingredient')
-    tag = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag)
     time_for_preparing = models.PositiveSmallIntegerField()
 
     class Meta:
@@ -61,7 +61,7 @@ class Recipe(models.Model):
 
 @receiver(post_init, sender=Recipe)
 def init_real_author_name(sender, instance, **kwargs):
-    instance._real_author_name = instance.author.username
+    instance._real_author_name = instance.author.username if hasattr(instance, "author") else 'not defined'
 
 
 class Unit(models.Model):
