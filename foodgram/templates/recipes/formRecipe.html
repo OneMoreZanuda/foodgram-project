@@ -31,29 +31,35 @@
 	<div class="form-container">
 		<form class="form" method="post" enctype="multipart/form-data">
 			<div class="form__group">
-				<label for="id_name" class="form__label">Название рецепта</label>
+				<label for="{{ form.title.auto_id }}" class="form__label">
+					{{form.title.label}}
+				</label>
 				<div class="form__field-group">
-					<input type="text" id="id_name" name="name" class="form__input">
-					<span class="form__error"></span>
+					{{ form.title }}
+					<span class="form__error">{{ form.title.errors.0 }}</span>
 				</div>
 			</div>
 			<div class="form__group">
-				<p class="form__label">Теги</p>
+				<p class="form__label">{{ form.tags.label }}</p>
 				<div class="form__field-group">
 					<div class="tags">
 						{% for value, text in form.tags.field.choices %}
 							<div class="tags__item">
 								<input id="id_{{ form.tags.name }}" name="{{ form.tags.name }}" type="checkbox" 
 									class="tags__checkbox tags__checkbox_style_{% cycle 'orange' 'green' 'purple' %}">
-								<label for="id_{{ form.tags.name }}" class="tags__label">{{ text }}</label>
+								<label for="id_{{ form.tags.name }}" class="tags__label">
+									{{ text }}
+								</label>
 							</div>
 						{% endfor %}
 					</div>
-					<span class="form__error"></span>
+					<span class="form__error">{{ form.title.errors.0 }}</span>
 				</div>
 			</div>
 			<div class="form__group">
-				<label for="nameIngredient" class="form__label">Ингредиенты</label>
+				<label for="{{ form.ingredients.auto_id }}" class="form__label">
+					{{ form.ingredients.label }}
+				</label>
 				<div class="form__field-group">
 					<div class="form__field-group-ingredientes">
 						<div class="form__dropdown">
