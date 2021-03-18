@@ -1,5 +1,5 @@
 from django.http import Http404
-from django.shortcuts import render
+from django.db.models import Q
 from django.views.generic import CreateView, ListView
 
 from .models import Recipe
@@ -13,18 +13,33 @@ class Index(ListView):
     paginator_class = CachedPaginator
     paginate_by = 6
 
-    def get_context_data(self, **kwargs):
-        data = super(Index, self).get_context_data(**kwargs)
+    def get(self, request, *args, **kwargs):
+        tags = self.get_tags()
+
+        query_q = Q()
+        for tag, checked in tags.items():
+            if checked:
+                query_q |= Q(**{"tags__contains": tag})
+        if query_q:
+            self.object_list = self.get_queryset().filter(query_q)
+        else:
+            self.object_list = Recipe.objects.none()
+
+        context = self.get_context_data()
+        context.update(tags)
+        return self.render_to_response(context)
+
+    def get_tags(self):
+        tags = {}
         query_params = self.request.GET
         for tag_name, _ in Recipe.tags.field.choices:
-            if tag_name not query_params:
-                tag_checked = True
+            if tag_name not in query_params:
+                tags[tag_name] = True
             elif query_params[tag_name] == 'no':
-                tag_checked = False
+                tags[tag_name] = False
             else:
                 raise Http404(f'Invalid value of the parameter "{tag_name}"')
-            data[tag_name] = tag_checked
-        return data
+        return tags
 
 
 class CreateRecipeView(CreateView):

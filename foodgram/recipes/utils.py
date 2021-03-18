@@ -1,6 +1,6 @@
 from django.core.cache import cache
 from django.utils.functional import cached_property
-from django.core.paginator import Page, PageNotAnInteger, Paginator
+from django.core.paginator import EmptyPage, Page, PageNotAnInteger, Paginator
 
 
 class CachedPaginator(Paginator):
@@ -87,3 +87,9 @@ class CachedPaginator(Paginator):
             page = Page(cached_object_list, number, self)
 
         return page
+
+    def validate_number(self, number):
+        try:
+            return super().validate_number(number)
+        except EmptyPage:
+            return number

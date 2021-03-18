@@ -1,10 +1,11 @@
 from django import template
 from urllib.parse import urlencode
 
+
 register = template.Library()
 
 
-@register.inclusion_tag("includes/tag_item.html", takes_context=True)
+@register.inclusion_tag("recipes/includes/tag_item.html", takes_context=True)
 def tag_item(context):
     name = context['name']
     checked = context[name]
@@ -14,9 +15,9 @@ def tag_item(context):
     new_query_params.pop(name, '')
     if checked:
         new_query_params[name] = 'no'
-        
+
     new_query_string = urlencode(new_query_params)
-    link = './' if new_query_string else f'?{new_query_string}'
+    link = f'?{new_query_string}' if new_query_string else './'
 
     return {
         'name': name,
@@ -25,3 +26,10 @@ def tag_item(context):
         'label': context['label'],
         'color': context['color']
     }
+
+
+@register.filter
+def exclude_item(dict_, key):
+    dict_copy = dict_.copy()
+    dict_copy.pop(key, None)
+    return dict_copy

@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load static %}
-{% load user_filters %}
 {% block title %}Рецепты{% endblock %}
 {% block css_file %}'recipes/pages/index.css'{% endblock %}
 {% block link_css %}
@@ -25,7 +24,7 @@
 {% block content %}
 	<div class="main__header">
 		<h1 class="main__title">Рецепты</h1>
-		{% include "includes/tags_block.html" %}
+		{% include "recipes/includes/tags_block.html" %}
 
 	</div>
 	<div class="card-list">
