@@ -12,7 +12,11 @@ def tag_item(context):
 
     query_params = context['request'].GET
     new_query_params = query_params.copy()
-    new_query_params.pop(name, '')
+    new_query_params.pop(name, None)
+
+    # return to the first page when changing it
+    new_query_params.pop('page', None)
+
     if checked:
         new_query_params[name] = 'no'
 
