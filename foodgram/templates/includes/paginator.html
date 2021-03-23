@@ -1,4 +1,4 @@
-{% load user_filters %}
+{% load custom_tags %}
 <nav class="pagination" aria-label="Search results pages">
 	<ul class="pagination__container">
 		{% with other_params=request.GET|exclude_item:'page' %}
