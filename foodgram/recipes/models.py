@@ -37,7 +37,7 @@ TAGS = (('breakfast', 'Завтрак'),
 
 
 class FoodProduct(models.Model):
-    name = models.CharField(max_length=200, unique=True, db_index=True)
+    name = models.CharField(max_length=200, primary_key=True, db_index=True)
     unit = models.CharField(max_length=30)
 
     class Meta:

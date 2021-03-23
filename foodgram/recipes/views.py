@@ -65,12 +65,12 @@ class CreateRecipeView(CreateView):
         data['ingredients_error'] = ingredients_error
 
         return data
-"""
-Сделать так, чтобы при создании рецепта с тем же именем тем же автором не валилось все с ошибкой
-Проверять, что не добавлены одинаковые ингредиенты
-Убирать ошибку неправильных ингредиентов, после того, как пользователь поправил (удалил например неправильный ингредиент)
-показывать ошибку, если ни один ингредиент не был добавлен
-"""
+# """
+# Сделать так, чтобы при создании рецепта с тем же именем тем же автором не валилось все с ошибкой
+# Проверять, что не добавлены одинаковые ингредиенты
+# Убирать ошибку неправильных ингредиентов, после того, как пользователь поправил (удалил например неправильный ингредиент)
+# показывать ошибку, если ни один ингредиент не был добавлен
+# """
     def post(self, request, *args, **kwargs):
         self.object = None
         form = self.get_form()
@@ -102,7 +102,7 @@ class CreateRecipeView(CreateView):
 
             quantity = request_data.get(f'valueIngredient_{index}', '')
             data = {
-                'food_product_name': value,
+                'food_product': value,
                 'quantity': quantity
             }
             ingredient_forms.append(IngredientForm(data))
