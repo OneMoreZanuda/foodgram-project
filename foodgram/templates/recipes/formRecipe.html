@@ -58,14 +58,19 @@
 							<div class="form__field-item-ingredient" id="ing_{{ forloop.counter }}">
 								<span> {{ ing_form.food_product_name.value }} {{ ing_form.quantity.value }} шт.</span>
 								<span class="form__field-item-delete"></span>
-								<input id="nameIngredient_{{ forloop.counter }}" name="nameIngredient_3" type="hidden" value="{{ ing_form.food_product_name.value }}">
-								<input id="valueIngredient_{{ forloop.counter }}" name="valueIngredient_3" type="hidden" value="{{ ing_form.quantity.value }}">
-								<input id="unitsIngredient_{{ forloop.counter }}" name="unitsIngredient_3" type="hidden" value="шт.">
+								<input id="nameIngredient_{{ forloop.counter }}" name="nameIngredient_{{ forloop.counter }}" type="hidden" value="{{ ing_form.food_product_name.value }}">
+								<input id="valueIngredient_{{ forloop.counter }}" name="valueIngredient_{{ forloop.counter }}" type="hidden" value="{{ ing_form.quantity.value }}">
+								<input id="unitsIngredient_{{ forloop.counter }}" name="unitsIngredient_{{ forloop.counter }}" type="hidden" value="шт.">
 							</div>
 						{% endfor %}
 					</div>
 					<span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
-					<span class="form__error">{{ ingredients_error }}</span>
+					{% for ing_form in ingredient_forms %}
+						<span class="form__error">{{ ing_form.food_product_name.errors.0 }}</span>
+						<span class="form__error">{{ ing_form.quantity.errors.0 }}</span>
+					{% empty %}
+						<span class="form__error">{{ missing_ingredients_error }}</span>
+					{% endfor %}
 				</div>
 			</div>
 			<div class="form__group">

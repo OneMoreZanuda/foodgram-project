@@ -5,28 +5,10 @@ from .models import Ingredient, FoodProduct, Recipe
 
 
 class IngredientForm(forms.ModelForm):
-    food_product_name = forms.CharField(max_length=200)
 
     class Meta:
         model = Ingredient
-        exclude = ('recipe', 'food_product')
-
-    def clean_food_product_name(self):
-        name = self.cleaned_data['food_product_name']
-
-        try:
-            FoodProduct.objects.get(name=name)
-        except FoodProduct.DoesNotExist:
-            mes = (f'Продукт "{name}" не найден в перечне доступных'
-                   ' для выбора продуктов')
-            raise ValidationError(mes)
-
-        return name
-
-    def save(self, commit=True):
-        name = self.cleaned_data['food_product_name']
-        self.instance.food_product = FoodProduct.objects.get(name=name)
-        return super().save(commit)
+        exclude = ('recipe',)
 
 
 class RecipeForm(forms.ModelForm):
@@ -34,11 +16,14 @@ class RecipeForm(forms.ModelForm):
         model = Recipe
         exclude = ('author', 'ingredients')
         labels = {
-            'title': 'Название рецепта',
-            'tags': 'Теги',
-            'time_for_preparing': 'Время приготовления',
-            'text': 'Описание'
+            'title': 'Название рецепта'
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        tags = self.fields['tags']
+        tags.error_messages['required'] = ('Необходимо выбрать минимум '
+                                           '{tags.min_choices} тег/тегов')
 
 
 IngredientsFormSet = forms.inlineformset_factory(

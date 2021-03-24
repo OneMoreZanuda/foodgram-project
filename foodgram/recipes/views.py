@@ -50,19 +50,16 @@ class CreateRecipeView(CreateView):
     fields = ('title', 'tags', 'time_for_preparing', 'description')
     template_name = 'recipes/formRecipe.html'
     context_object_name = 'recipe'
+    # form_class = RecipeForm
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         if 'ingredient_forms' not in kwargs:
             data['ingredient_forms'] = self.get_ingredient_forms()
 
-        ingredients_error = ''
-        for ing_form in data['ingredient_forms']:
-            if ing_form.errors:
-                ingredients_error = list(ing_form.errors.values())[0]
-                break
-
-        data['ingredients_error'] = ingredients_error
+        if self.request.method in ('POST', 'PUT') and not data['ingredient_forms']:
+            data['missing_ingredients_error'] = (
+            'Необходимо добавить хотя бы один ингредиент')
 
         return data
 # """
@@ -75,14 +72,15 @@ class CreateRecipeView(CreateView):
         self.object = None
         form = self.get_form()
         ingredient_forms = self.get_ingredient_forms()
-        if form.is_valid() and all(f.is_valid() for f in ingredient_forms):
-            return self.forms_valid(form, ingredient_forms)
+        if (form.is_valid() and ingredient_forms
+                and all(f.is_valid() for f in ingredient_forms)):
+            return self.form_valid(form, ingredient_forms)
         else:
-            return self.forms_invalid(form, ingredient_forms)
+            return self.form_invalid(form, ingredient_forms)
 
     def get_ingredient_forms(self):
         ingredient_forms = []
-        if self.request.method in ('POST', 'PUT'):
+        if self.request.method not in ('POST', 'PUT'):
             return ingredient_forms
 
         request_data = self.request.POST
@@ -102,13 +100,13 @@ class CreateRecipeView(CreateView):
 
             quantity = request_data.get(f'valueIngredient_{index}', '')
             data = {
-                'food_product': value,
+                'food_product_name': value,
                 'quantity': quantity
             }
             ingredient_forms.append(IngredientForm(data))
         return ingredient_forms
 
-    def forms_valid(self, form, ingredient_forms):
+    def form_valid(self, form, ingredient_forms):
         # form.instance.author = self.request.user
         form.instance.author = User.objects.get_or_create(username='deleted')[0]
         self.object = form.save()
@@ -118,7 +116,7 @@ class CreateRecipeView(CreateView):
             form.save()
         return HttpResponseRedirect(self.get_success_url())
 
-    def forms_invalid(self, form, ingredient_forms):
+    def form_invalid(self, form, ingredient_forms):
         data = self.get_context_data(
             form=form, ingredient_forms=ingredient_forms
         )
