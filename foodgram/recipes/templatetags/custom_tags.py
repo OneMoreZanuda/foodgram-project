@@ -5,18 +5,25 @@ from urllib.parse import urlencode
 register = template.Library()
 
 
-@register.filter
-def add_class(field, css):
+@register.simple_tag
+def field_with_additional_attrs(field, *_, **kwargs):
     attrs = field.field.widget.attrs.copy()
-    attrs["class"] = css
+    attrs.update(kwargs)
     return field.as_widget(attrs=attrs)
 
 
-@register.filter
-def update_id(field, new_id):
-    attrs = field.field.widget.attrs.copy()
-    attrs["id"] = new_id
-    return field.as_widget(attrs=attrs)
+# @register.filter
+# def add_class(field, css):
+#     attrs = field.field.widget.attrs.copy()
+#     attrs["class"] = css
+#     return field.as_widget(attrs=attrs)
+
+
+# @register.filter
+# def update_id(field, new_id):
+#     attrs = field.field.widget.attrs.copy()
+#     attrs["id"] = new_id
+#     return field.as_widget(attrs=attrs)
 
 
 @register.inclusion_tag("recipes/includes/tag_item.html", takes_context=True)

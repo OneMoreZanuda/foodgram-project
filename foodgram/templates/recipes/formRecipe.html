@@ -4,7 +4,7 @@
 {% block css_file %}'recipes/pages/index.css'{% endblock %}
 {% block link_css %}<link rel="stylesheet" href="{% static 'recipes/pages/form.css' %}">{% endblock %}
 
-				 
+
 {% block nav %}
 	{% include "recipes/includes/nav_auth.html" with active_tab=3 added_recipes_count=4 %}
 {% endblock nav %}
@@ -18,14 +18,14 @@
 		<form class="form" method="post" enctype="multipart/form-data">
 			{% csrf_token %}
 			<div class="form__group">
-				<label for="{{ form.title.auto_id }}" class="form__label">Название рецепта</label>
+				<label for="{{ form.title.auto_id }}" class="form__label">{{ form.title.label }}</label>
 				<div class="form__field-group">
-					{{ form.title|add_class:"form__input" }}
+					{% field_with_additional_attrs form.title class="form__input" %}
 					<span class="form__error">{{ form.title.errors.0 }}</span>
 				</div>
 			</div>
 			<div class="form__group">
-				<p class="form__label">Теги</p>
+				<p class="form__label">{{ form.tags.label }}</p>
 				<div class="form__field-group">
 					<div class="tags">
 						{% for value, text in form.tags.field.choices %}
@@ -54,37 +54,34 @@
 						<label for="cantidad" class="form__label" id="cantidadVal">шт.</label>
 					</div>
 					<div class="form__field-group-ingredientes-container">
-						{% for ing_form in ingredient_forms %}
+						{% for ingredient in form.ingredients %}
 							<div class="form__field-item-ingredient" id="ing_{{ forloop.counter }}">
-								<span> {{ ing_form.food_product_name.value }} {{ ing_form.quantity.value }} шт.</span>
+								<span> {{ ingredient.food_product.name }} {{ ingredient.quantity }} {{ingredient.food_product.unit}}</span>
 								<span class="form__field-item-delete"></span>
-								<input id="nameIngredient_{{ forloop.counter }}" name="nameIngredient_{{ forloop.counter }}" type="hidden" value="{{ ing_form.food_product_name.value }}">
-								<input id="valueIngredient_{{ forloop.counter }}" name="valueIngredient_{{ forloop.counter }}" type="hidden" value="{{ ing_form.quantity.value }}">
-								<input id="unitsIngredient_{{ forloop.counter }}" name="unitsIngredient_{{ forloop.counter }}" type="hidden" value="шт.">
+								<input id="nameIngredient_{{ forloop.counter }}" name="nameIngredient_{{ forloop.counter }}" type="hidden" value="{{ ingredient.food_product.name }}">
+								<input id="valueIngredient_{{ forloop.counter }}" name="valueIngredient_{{ forloop.counter }}" type="hidden" value="{{ ingredient.quantity }}">
+								<input id="unitsIngredient_{{ forloop.counter }}" name="unitsIngredient_{{ forloop.counter }}" type="hidden" value="{{ingredient.food_product.unit}}">
 							</div>
 						{% endfor %}
 					</div>
 					<span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
-					{% for ing_form in ingredient_forms %}
-						<span class="form__error">{{ ing_form.food_product_name.errors.0 }}</span>
-						<span class="form__error">{{ ing_form.quantity.errors.0 }}</span>
-					{% empty %}
-						<span class="form__error">{{ missing_ingredients_error }}</span>
+					{% for error in form.non_field_errors %}
+						<span class="form__error">{{ error }}</span>
 					{% endfor %}
 				</div>
 			</div>
 			<div class="form__group">
-				<label for="id_time" class="form__label">Время приготовления</label>
+				<label for="id_time" class="form__label">{{ form.time_for_preparing.label }}</label>
 				<div class="form__field-group form__field-group_time">
-					{{ form.time_for_preparing|add_class:"form__input" }}
+					{% field_with_additional_attrs form.time_for_preparing class="form__input" min="1"%}
 					<label for="form.time_for_preparing.auto_id" class="form__label">минут</label>
 					<span class="form__error">{{ form.time_for_preparing.errors.0 }}</span>
 				</div>
 			</div>
 			<div class="form__group">
-				<label for="id_description" class="form__label">Описание</label>
+				<label for="id_description" class="form__label">{{ form.description.label }}</label>
 				<div class="form__field-group">
-					<textarea name="description" id="id_description" rows="8" class="form__textarea"></textarea>
+					{% field_with_additional_attrs form.description class="form__textarea" rows="8" %}
 					<span class="form__error">{{ form.description.errors.0 }}</span>
 				</div>
 			</div>
