@@ -1,3 +1,4 @@
+from collections import Counter
 from django import forms
 from django.core.exceptions import ValidationError
 
@@ -35,7 +36,7 @@ class CustomModelChoiceField(forms.ModelChoiceField):
 class IngredientForm(forms.ModelForm):
     class Meta:
         model = Ingredient
-        exclude = ('recipe',)
+        fields = ('food_product', 'quantity')
         field_classes = {
             'food_product': CustomModelChoiceField,
         }
@@ -55,17 +56,20 @@ class RecipeForm(forms.ModelForm):
             'tags': {'required': 'Необходимо выбрать минимум 1 тег'}
         }
         widgets = {
+            'tags': forms.CheckboxSelectMultiple(),
             'description': forms.Textarea(),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.ingredients = []
+        self.fields['tags'].to_field_name = 'name'
+        self.ingredients = self.instance.ingredient_set.all()
 
     def clean_title(self):
         title = self.cleaned_data['title']
-        author = self.instance.author
-        if author.recipes.filter(title=title).exists():
+        author_recipes = self.instance.author.recipes.filter(title=title)
+
+        if author_recipes.exclude(pk=self.instance.pk).exists():
             raise ValidationError(
                 'Вы уже создавали рецепт с таким названием',
                 code='invalid'
@@ -74,19 +78,20 @@ class RecipeForm(forms.ModelForm):
 
     def clean(self):
         super().clean()
+        self.collect_ingredients()
+
+        self.check_uniqueness_of_ingredients()
+        self.check_availability_of_ingredients()
+
+    def collect_ingredients(self):
+        self.ingredients = []
         food_products = filter(
             lambda item: item[0].startswith(FOOD_PRODUCT_WIDGET_NAME),
             self.data.items()
         )
 
         for key, food_product_name in food_products:
-            try:
-                index = key.split('_')[1]
-            except IndexError:
-                raise ValueError(
-                    'Некорректное имя HTML-элемента, '
-                    f'содержащего имя продукта {food_product_name}'
-                )
+            index = key.split('_')[1]
 
             quantity = self.data.get(f'{QUANTITY_WIDGET_NAME}_{index}', '')
             data = {
@@ -100,13 +105,27 @@ class RecipeForm(forms.ModelForm):
                 ingredient_errors = sum(ingredient_form.errors.values(), [])
                 self.add_error(None, ingredient_errors)
 
+    def check_uniqueness_of_ingredients(self):
+        products = [ing.food_product.name for ing in self.ingredients]
+        for product, count in Counter(products).most_common():
+            if count > 1:
+                mes = (f'Продукт {product} встречается в списке '
+                       'несколько раз. Пожалуйста, исправьте список так, '
+                       'чтобы каждый продукт был указан только один раз')
+                self.add_error(None, mes)
+
+    def check_availability_of_ingredients(self):
         if not self.ingredients:
             self.add_error(None, 'Необходимо добавить хотя бы один ингредиент')
 
-    def _save_ingredients(self):
+    def _save_m2m(self):
+        super()._save_m2m()
         self.instance.ingredients.clear()
-        for ingredient in self.ingredients:
-            ingredient.recipe = self.instance
-            ingredient.save()
-
-    _save_m2m = _save_ingredients
+        self.instance.ingredient_set.set(self.ingredients, bulk=False)
+        # for ingredient in self.ingredients:
+        #     self.instance.ingredients.add(
+        #         ingredient.food_product,
+        #         through_defaults={
+        #             'quantity': ingredient.quantity
+        #         }
+        #     )

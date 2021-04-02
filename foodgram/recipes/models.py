@@ -1,8 +1,11 @@
+import re
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
-from multiselectfield import MultiSelectField
+from django.urls import reverse
+from django.utils.text import normalize_newlines
 
 
 User = get_user_model()
@@ -17,23 +20,29 @@ def get_sentinel_user():
 #     instance.image.delete(False)
 
 
-# class Tag(models.Model):
-#     class MealType(models.TextChoices):
-#         BREAKFAST = 'Завтрак'
-#         LUNCH = 'Обед'
-#         DINNER = 'Ужин'
+class Tag(models.Model):
+    class MealType(models.TextChoices):
+        BREAKFAST = 'breakfast', 'Завтрак'
+        LUNCH = 'lunch', 'Обед'
+        DINNER = 'dinner', 'Ужин'
 
-#     name = models.CharField(
-#         max_length=7, choices=MealType.choices, default=MealType.LUNCH
-#     )
+    colors = {
+        'breakfast': 'orange',
+        'lunch': 'green',
+        'dinner': 'purple'
+    }
 
-#     def __str__(self):
-#         return self.name
+    @property
+    def color(self):
+        return self.colors[self.name]
 
+    name = models.CharField(
+        max_length=9, choices=MealType.choices,
+        unique=True, default=MealType.LUNCH
+    )
 
-TAGS = (('breakfast', 'Завтрак'),
-        ('lunch', 'Обед'),
-        ('dinner', 'Ужин'))
+    def __str__(self):
+        return self.name
 
 
 class FoodProduct(models.Model):
@@ -42,6 +51,8 @@ class FoodProduct(models.Model):
 
     class Meta:
         ordering = ('name',)
+        verbose_name = 'Продукт'
+        verbose_name_plural = 'Продукты'
 
     def __str__(self):
         return self.name
@@ -57,23 +68,37 @@ class Recipe(models.Model):
     # image = models.ImageField(upload_to='recipes/')
     description = models.TextField()
     ingredients = models.ManyToManyField(FoodProduct, through='Ingredient')
-    # tags = models.ManyToManyField(Tag)
-    tags = MultiSelectField(choices=TAGS, min_choices=1, default='lunch')
+    tags = models.ManyToManyField(Tag)
     time_for_preparing = models.PositiveSmallIntegerField()
     pub_date = models.DateTimeField(editable=False, auto_now_add=True)
 
     class Meta:
         unique_together = ('_original_author_name', 'title')
         ordering = ('-pub_date',)
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('recipe', args=(self.pk,))
+
+    def description_as_list_of_paragraphs(self):
+        value = normalize_newlines(self.description)
+        paras = re.split('\n{2,}', str(value))
+        return paras
 
 
 class Ingredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     food_product = models.ForeignKey(FoodProduct, on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField()
+
+    class Meta:
+        unique_together = ('recipe', 'food_product')
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
 
 
 @receiver(pre_save, sender=Recipe)
