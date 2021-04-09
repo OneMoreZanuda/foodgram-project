@@ -1,30 +1,26 @@
 {% extends "base.html" %}
-{% load static custom_tags %}
-{% block title %}Создание рецепта{% endblock %}
+{% load static recipes_custom_tags %}
+{% block title %}{% endblock %}
 {% block link_css %}<link rel="stylesheet" href="{% static 'recipes/pages/form.css' %}">{% endblock %}
 
-
-{% block nav %}
-	{% include "recipes/includes/nav_auth.html" with active_tab=3 added_recipes_count=4 %}
-{% endblock nav %}
-
+{% block nav %}{% endblock nav %}
 
 {% block content %}
 	<div class="main__header">
-		<h1 class="main__title">Создание рецепта</h1>
+		<h1 class="main__title">{% block header_title %}{% endblock header_title %}</h1>
 	</div>
 	<div class="form-container">
 		<form class="form" method="post" enctype="multipart/form-data">
 			{% csrf_token %}
 			<div class="form__group">
-				<label for="{{ form.title.auto_id }}" class="form__label">{{ form.title.label }}</label>
+				<label for="{{ form.title.auto_id }}" class="form__label">Название рецепта</label>
 				<div class="form__field-group">
 					{% field_with_additional_attrs form.title class="form__input" %}
 					<span class="form__error">{{ form.title.errors.0 }}</span>
 				</div>
 			</div>
 			<div class="form__group">
-				<p class="form__label">{{ form.tags.label }}</p>
+				<p class="form__label">Теги</p>
 				<div class="form__field-group">
 					<div class="tags">
 						{% for choice, label in form.tags.field.widget.choices %}
@@ -72,7 +68,7 @@
 				</div>
 			</div>
 			<div class="form__group">
-				<label for="id_time" class="form__label">{{ form.time_for_preparing.label }}</label>
+				<label for="id_time" class="form__label">Время приготовления</label>
 				<div class="form__field-group form__field-group_time">
 					{% field_with_additional_attrs form.time_for_preparing class="form__input" min="1"%}
 					<label for="form.time_for_preparing.auto_id" class="form__label">минут</label>
@@ -80,7 +76,7 @@
 				</div>
 			</div>
 			<div class="form__group">
-				<label for="id_description" class="form__label">{{ form.description.label }}</label>
+				<label for="id_description" class="form__label">Описание</label>
 				<div class="form__field-group">
 					{% field_with_additional_attrs form.description class="form__textarea" rows="8" %}
 					<span class="form__error">{{ form.description.errors.0 }}</span>
@@ -94,12 +90,7 @@
 				</div>
 			</div>
 			<div class="form__footer">
-				{% if request.resolver_match.url_name == 'recipe_new' %}
-					<button class="button button_style_blue">Создать рецепт</button>
-				{% else %}
-					<button class="button button_style_blue">Сохранить</button>
-					<a style="margin-left: 2.5em" href="#" class="form__ingredient-link">Удалить</a>
-				{% endif %}
+				{% block form_footer %}{% endblock form_footer %}
 			</div>
 		</form>
 	</div>

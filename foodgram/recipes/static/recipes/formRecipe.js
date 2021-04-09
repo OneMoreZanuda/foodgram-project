@@ -94,15 +94,17 @@ const cbEventInput = (elem) => {
         if(e.length !== 0 ) {
             const items = e.map( elem => {
 
-                return `<a class="form__item-list" data-val="${elem.dimension}">${elem.title}</a>`
+                return `<a class="form__item-list" data-val="${elem.unit}">${elem.name}</a>`
             }).join(' ')
             formDropdownItems.style.display = 'flex';
             formDropdownItems.innerHTML = items;
+            nameIngredient.hasValidValue = true;
         }
         else {
+            nameIngredient.hasValidValue = false;
             if (elem.target.value) {
                 formDropdownItems.style.display = 'flex';
-                formDropdownItems.innerHTML = `<a class="form__item-error" data-val="">Продукта нет в перечне допустимых</a>`;            
+                formDropdownItems.innerHTML = `<a class="form__item-error" data-val="">Продукта нет в перечне допустимых</a>`;
             }
             else {
                 formDropdownItems.style.display = '';

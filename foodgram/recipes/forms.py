@@ -46,12 +46,6 @@ class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = ('title', 'tags', 'time_for_preparing', 'description')
-        labels = {
-            'title': 'Название рецепта',
-            'tags': 'Теги',
-            'time_for_preparing': 'Время приготовления',
-            'description': 'Описание'
-        }
         error_messages = {
             'tags': {'required': 'Необходимо выбрать минимум 1 тег'}
         }

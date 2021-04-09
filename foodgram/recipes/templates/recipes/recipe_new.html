@@ -1,0 +1,12 @@
+{% extends "recipes/recipe_form.html" %}
+{% block title %}Создание рецепта{% endblock %}
+
+{% block nav %}
+	{% include "includes/nav.html" with active_tab='Создать рецепт' added_recipes_count=4 %}
+{% endblock nav %}
+
+{% block header_title %}Создание рецепта{% endblock header_title %}
+
+{% block form_footer %}
+	<button class="button button_style_blue">Создать рецепт</button>
+{% endblock form_footer %}

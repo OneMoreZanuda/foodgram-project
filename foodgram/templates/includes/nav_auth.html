@@ -1,0 +1,38 @@
+<nav class="nav">
+	<div class="nav__container container">
+		<ul class="nav__items list">
+			<li class="nav__item 
+				{% if not active_tab %}nav__item_disabled
+				{% elif active_tab == 'Рецепты' %}nav__item_active{% endif %}">
+					<a href="{% url 'index' %}" class="nav__link link ">Рецепты</a>
+			</li>
+			<li class="nav__item
+				{% if not active_tab %}nav__item_disabled
+				{% elif active_tab == 'Мои подписки' %}nav__item_active{% endif %}">
+				<a href="#" class="nav__link link">Мои подписки</a>
+			</li>
+			<li class="nav__item
+				{% if not active_tab %}nav__item_disabled
+				{% elif active_tab == 'Создать рецепт' %}nav__item_active{% endif %}">
+				<a href="{% url 'recipe_new' %}" class="nav__link link">Создать рецепт</a>
+			</li>
+			<li class="nav__item
+				{% if not active_tab %}nav__item_disabled
+				{% elif active_tab == 'Избранное' %}nav__item_active{% endif %}">
+				<a href="{% url 'favorites' %}" class="nav__link link">Избранное</a>
+			</li>
+			<li class="nav__item
+				{% if not active_tab %}nav__item_disabled
+				{% elif active_tab == 'Список покупок' %}nav__item_active{% endif %}">
+				<a href="#" class="nav__link link">Список покупок</a>
+				{% if added_recipes_count %}
+					<span class="badge badge_style_blue nav__badge" id="counter">{{ added_recipes_count }}</span>
+				{% endif %}
+			</li>
+		</ul>
+		<ul class="nav__items list">
+			<li class="nav__item"><a href="#" class="nav__link link">Изменить пароль</a></li>
+			<li class="nav__item"><a href="#" class="nav__link link">Выход</a></li>
+		</ul>
+	</div>
+</nav>

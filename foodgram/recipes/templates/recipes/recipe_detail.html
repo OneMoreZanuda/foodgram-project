@@ -6,19 +6,31 @@
 {% endblock %}
 
 {% block nav %}
-	{% include "recipes/includes/nav_auth.html" with active_tab=0 added_recipes_count=4 %}
+	{% include "includes/nav.html" with active_tab='all' added_recipes_count=4 %}
 {% endblock nav %}
 
 {% block content %}
-	<div class="single-card" data-id="371" data-author="12">
+	{% csrf_token %}
+	<div class="single-card" data-id="{{ recipe.id }}" data-author="{{ recipe.author.id }}">
 		<img src="{% static 'recipes/images/testCardImg.png' %}" alt="Вариант сервировки" class="single-card__image">
 		<div class="single-card__info">
 			<div class="single-card__header-info">
 				<h1 class="single-card__title">{{ recipe.title }}</h1>
-				<div class="single-card__favorite">
-					<button class="button button_style_none" name="favorites" data-out><span class="icon-favorite icon-favorite_big"></span></button>
-					<div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
-				</div>
+				{% if user.is_authenticated %}
+					<div class="single-card__favorite">
+						{% if not is_favorite_recipe %}
+							<button class="button button_style_none" name="favorites" data-out>
+								<span class="icon-favorite icon-favorite_big"></span>
+							</button>
+							<div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
+						{% else %}
+							<button class="button button_style_none" name="favorites">
+								<span class="icon-favorite icon-favorite_big icon-favorite_active"></span>
+							</button>
+							<div class="single-card__favorite-tooltip tooltip">Убрать из избранного</div>
+						{% endif %}
+					</div>
+				{% endif %}
 			</div>
 			<ul class="single-card__items">
 				{% for tag in recipe.tags.all %}

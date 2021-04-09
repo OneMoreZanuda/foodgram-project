@@ -1,0 +1,13 @@
+{% extends "recipes/recipe_form.html" %}
+{% block title %}Редактирование рецепта{% endblock %}
+
+{% block nav %}
+	{% include "includes/nav.html" with active_tab='all' added_recipes_count=4 %}
+{% endblock nav %}
+
+{% block header_title %}Редактирование рецепта{% endblock header_title %}
+
+{% block form_footer %}
+	<button class="button button_style_blue">Сохранить</button>
+	<a style="margin-left: 2.5em" href="#" class="form__ingredient-link">Удалить</a>
+{% endblock form_footer %}

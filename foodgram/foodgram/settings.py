@@ -37,6 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'rest_framework',
+    'allauth',
+    'allauth.account',
+    'api',
+    # 'users',
     'recipes',
 ]
 
@@ -84,6 +90,11 @@ DATABASES = {
 }
 
 
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "index"
+LOGOUT_REDIRECT_URL = "index"
+
+
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -123,3 +134,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = BASE_DIR.joinpath("static")
+
+SITE_ID = 1
+
+
+# django-allauth settings
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USER_DISPLAY = (
+    lambda user: f'{user.first_name} {user.last_name}'.strip()
+)
+ACCOUNT_USERNAME_REQUIRED = False

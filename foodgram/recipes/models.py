@@ -90,6 +90,15 @@ class Recipe(models.Model):
         return paras
 
 
+@receiver(pre_save, sender=Recipe)
+def init_original_author_name(sender, instance, *args, **kwargs):
+    if instance._original_author_name != '# not defined #':
+        return
+
+    if hasattr(instance, 'author') and instance.author is not None:
+        instance._original_author_name = instance.author.username
+
+
 class Ingredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     food_product = models.ForeignKey(FoodProduct, on_delete=models.PROTECT)
@@ -101,10 +110,30 @@ class Ingredient(models.Model):
         verbose_name_plural = 'Ингредиенты'
 
 
-@receiver(pre_save, sender=Recipe)
-def init_original_author_name(sender, instance, *args, **kwargs):
-    if instance._original_author_name != '# not defined #':
-        return
+class Preference(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='preferences')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
+                               related_name='preferences_it_belongs_to')
 
-    if hasattr(instance, "author") and instance.author is not None:
-        instance._original_author_name = instance.author.username
+    class Meta:
+        verbose_name = 'Избранный рецепт'
+        verbose_name_plural = 'Избранные рецепты'
+
+
+class Subscription(models.Model):
+    subscriber = models.ForeignKey(User, on_delete=models.CASCADE,
+                                   related_name='subscriptions')
+    author = models.ForeignKey(User, on_delete=models.CASCADE,
+                               related_name='subscriptions_to_user')
+
+    class Meta:
+        unique_together = ('subscriber', 'author')
+        constraints = [
+            models.CheckConstraint(
+                name='cannot_follow_yourself',
+                check=~models.Q(subscriber=models.F('author'))
+            )
+        ]
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'

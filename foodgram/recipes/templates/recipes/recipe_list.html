@@ -6,17 +6,19 @@
 {% endblock %}
 
 {% block nav %}
-	{% include "recipes/includes/nav_not_auth.html" with active_tab=1 added_recipes_count=4 %}
+	{% include "includes/nav.html" with active_tab=page_title added_recipes_count=0 %}
 {% endblock nav %}
 
 {% block content %}
 	<div class="main__header">
-		<h1 class="main__title">Рецепты</h1>
+		<h1 class="main__title">{{ page_title }}</h1>
 		{% include "recipes/includes/tags_block.html" %}
 	</div>
 	<div class="card-list">
 		{% for recipe in page_obj %}
 			{% include "recipes/includes/recipe_item_preview.html" with recipe=recipe%}
+		{% empty %}
+			К сожалению, мы не нашли рецептов с хотя бы одним из выбранных тегов
 		{% endfor %}
 	</div>
   {% if page_obj.has_other_pages %}
@@ -28,6 +30,7 @@
 	<script src="{% static 'recipes/js/components/MainCards.js' %}"></script>
 	
 	<script src="{% static 'recipes/js/components/Purchases.js' %}"></script>
+	<script src="{% static 'recipes/js/components/Favorites.js' %}"></script>
 	
 	<script src="{% static 'recipes/js/config/config.js' %}"></script>
 	<script src="{% static 'recipes/js/components/CardList.js' %}"></script>

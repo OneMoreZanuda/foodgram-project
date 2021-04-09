@@ -1,1 +1,0 @@
-<ul class="errorlist"><li>food_product<ul class="errorlist"><li>Обязательное поле.</li></ul></li><li>food_product_name<ul class="errorlist"><li>Продукт &quot;Яйцо&quot; не найден в перечне доступных для выбора продуктов</li></ul></li></ul>

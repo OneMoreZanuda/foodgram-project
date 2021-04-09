@@ -1,5 +1,5 @@
 {% load static %}
-<div class="card" data-id="124">
+<div class="card" data-id="{{ recipe.id }}">
 	<a href="{{ recipe.get_absolute_url }}" class="link" target="_blank"><img src="{% static 'recipes/images/testCardImg.png' %}" alt="Вариант сервировки" class="card__image"></a>
 	<div class="card__body">
 		<a class="card__title link" href="{{ recipe.get_absolute_url }}" target="_blank">{{ recipe.title }}</a>
@@ -19,5 +19,16 @@
 	</div>
 	<div class="card__footer">
 		<button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
+		{% if user.is_authenticated %}
+			{% if not recipe.is_favorite %}
+				<button class="button button_style_none" name="favorites" data-out>
+					<span class="icon-favorite"></span>
+				</button>
+			{% else %}
+				<button class="button button_style_none" name="favorites">
+					<span class="icon-favorite icon-favorite_active"></span>
+				</button>
+			{% endif %}
+		{% endif %}
 	</div>
 </div>
