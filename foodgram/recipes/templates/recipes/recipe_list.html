@@ -10,6 +10,7 @@
 {% endblock nav %}
 
 {% block content %}
+	{% csrf_token %}
 	<div class="main__header">
 		<h1 class="main__title">{{ page_title }}</h1>
 		{% include "recipes/includes/tags_block.html" %}
@@ -18,7 +19,9 @@
 		{% for recipe in page_obj %}
 			{% include "recipes/includes/recipe_item_preview.html" with recipe=recipe%}
 		{% empty %}
-			К сожалению, мы не нашли рецептов с хотя бы одним из выбранных тегов
+			<div class="custom-center-block">
+				<p class="custom-text-block">Таких рецептов пока нет</p>
+			</div>
 		{% endfor %}
 	</div>
   {% if page_obj.has_other_pages %}
@@ -37,5 +40,9 @@
 	<script src="{% static 'recipes/js/components/Header.js' %}"></script>
 	
 	<script src="{% static 'recipes/js/api/Api.js' %}"></script>
-	<script src="{% static 'recipes/indexNotAuth.js' %}"></script>
+	{% if user.is_authenticated %}
+		<script src="{% static 'recipes/indexAuth.js' %}"></script>
+	{% else %}
+		<script src="{% static 'recipes/indexNotAuth.js' %}"></script>
+	{% endif %}
 {% endblock scripts %}

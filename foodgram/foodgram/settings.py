@@ -39,10 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'rest_framework',
+    'users',
     'allauth',
     'allauth.account',
     'api',
-    # 'users',
     'recipes',
 ]
 
@@ -90,10 +90,18 @@ DATABASES = {
 }
 
 
-LOGIN_URL = "login"
+LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "index"
 LOGOUT_REDIRECT_URL = "index"
 
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -113,6 +121,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -137,11 +151,16 @@ STATIC_ROOT = BASE_DIR.joinpath("static")
 
 SITE_ID = 1
 
+AUTH_USER_MODEL = 'recipes.Cook'
 
 # django-allauth settings
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USER_DISPLAY = (
-    lambda user: f'{user.first_name} {user.last_name}'.strip()
+    lambda user: user.get_full_name()
 )
 ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_MAX_EMAIL_ADDRESSES = 2
+ACCOUNT_SESSION_REMEMBER = False
+
+ACCOUNT_FORMS = {'signup': 'users.forms.CustomSignupForm'}

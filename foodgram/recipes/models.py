@@ -1,6 +1,6 @@
 import re
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
@@ -8,16 +8,21 @@ from django.urls import reverse
 from django.utils.text import normalize_newlines
 
 
-User = get_user_model()
-
-
-def get_sentinel_user():
-    return User.objects.get_or_create(username='deleted')[0]
-
-
 # @receiver(post_delete, sender=Post)
 # def submission_delete(sender, instance, **kwargs):
 #     instance.image.delete(False)
+
+
+class Cook(AbstractUser):
+    favorite_recipes = models.ManyToManyField('Recipe')
+
+    class Meta(AbstractUser.Meta):
+        verbose_name = 'Кулинар'
+        verbose_name_plural = 'Кулинары'
+
+
+def get_sentinel_user():
+    return Cook.objects.get_or_create(username='deleted')[0]
 
 
 class Tag(models.Model):
@@ -63,7 +68,7 @@ class Recipe(models.Model):
         max_length=150, editable=False, default='# not defined #'
     )
     title = models.CharField(max_length=200)
-    author = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user),
+    author = models.ForeignKey(Cook, on_delete=models.SET(get_sentinel_user),
                                related_name='recipes')
     # image = models.ImageField(upload_to='recipes/')
     description = models.TextField()
@@ -110,30 +115,35 @@ class Ingredient(models.Model):
         verbose_name_plural = 'Ингредиенты'
 
 
-class Preference(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name='preferences')
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
-                               related_name='preferences_it_belongs_to')
+# class Preference(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE,
+#                              related_name='preferences')
+#     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
+#                                related_name='preferences_it_belongs_to')
 
-    class Meta:
-        verbose_name = 'Избранный рецепт'
-        verbose_name_plural = 'Избранные рецепты'
+#     class Meta:
+#         verbose_name = 'Избранный рецепт'
+#         verbose_name_plural = 'Избранные рецепты'
 
 
-class Subscription(models.Model):
-    subscriber = models.ForeignKey(User, on_delete=models.CASCADE,
-                                   related_name='subscriptions')
-    author = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name='subscriptions_to_user')
 
-    class Meta:
-        unique_together = ('subscriber', 'author')
-        constraints = [
-            models.CheckConstraint(
-                name='cannot_follow_yourself',
-                check=~models.Q(subscriber=models.F('author'))
-            )
-        ]
-        verbose_name = 'Подписка'
-        verbose_name_plural = 'Подписки'
+
+
+
+
+# class Subscription(models.Model):
+#     subscriber = models.ForeignKey(User, on_delete=models.CASCADE,
+#                                    related_name='subscriptions')
+#     author = models.ForeignKey(User, on_delete=models.CASCADE,
+#                                related_name='subscriptions_to_user')
+
+#     class Meta:
+#         unique_together = ('subscriber', 'author')
+#         constraints = [
+#             models.CheckConstraint(
+#                 name='cannot_follow_yourself',
+#                 check=~models.Q(subscriber=models.F('author'))
+#             )
+#         ]
+#         verbose_name = 'Подписка'
+#         verbose_name_plural = 'Подписки'

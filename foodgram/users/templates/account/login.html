@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static users_custom_tags %}
+{% block title %}Войти на сайт{% endblock %}
+{% block link_css %}
+	<link rel="stylesheet" href="{% static 'users/pages/form.css' %}">
+{% endblock %}
+
+{% block nav %}
+	{% include "includes/nav.html" %}
+{% endblock nav %}
+
+{% block content %}
+	<div class="main__header">
+		<h1 class="main__title">Войти на сайт</h1>
+	</div>
+	<div class="form-container">
+		<form class="form" method="post" action="{% url 'account_login' %}">
+			{% csrf_token %}
+			<div class="form__group">
+				<label for="{{ form.login.id_for_label }}" class="form__label">E-mail</label>
+				<div class="form__field-group">
+					{% field_with_additional_attrs form.login class="form__input" %}
+					<span class="form__error">{{ form.login.errors.0 }}</span>
+				</div>
+			</div>
+			<div class="form__group">
+				<label for="{{ form.password.id_for_label }}" class="form__label">Пароль</label>
+				<div class="form__field-group">
+					{% field_with_additional_attrs form.password class="form__input" %}
+					<span class="form__error">{{ form.password.errors.0  }}</span>
+				</div>
+			</div>
+			{% for error in form.non_field_errors %}
+				<span class="form__error">{{ error }}</span>
+			{% endfor %}
+			<div class="form__footer">
+				<button class="button button_style_blue">Войти</button>
+				<a href="{% url 'account_reset_password' %}" class="form__forgot-link">Забыли пароль?</a>
+			</div>
+			{% if redirect_field_value %}
+				<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+			{% endif %}
+		</form>
+	</div>
+{% endblock content %}
+

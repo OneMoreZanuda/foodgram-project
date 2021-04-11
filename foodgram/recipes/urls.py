@@ -4,22 +4,23 @@ from . import views
 
 urlpatterns = [
     path('', views.AllRecipesView.as_view(), name='index'),
-    path('recipes/favorites/',
+    path(
+        'favorites/',
         views.FavoriteRecipesView.as_view(),
         name='favorites'
     ),
     path(
-        'recipes/new/',
+        'new/',
         views.CreateRecipeView.as_view(),
         name='recipe_new'
     ),
     path(
-        'recipes/<int:pk>/edit/',
+        '<int:pk>/edit/',
         views.UpdateRecipeView.as_view(),
         name='recipe_edit'
     ),
     path(
-        'recipes/<int:pk>',
+        '<int:pk>',
         views.RecipeView.as_view(),
         name='recipe'
     ),

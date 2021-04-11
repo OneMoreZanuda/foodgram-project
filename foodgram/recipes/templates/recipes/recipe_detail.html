@@ -81,6 +81,10 @@
 	<script src="{% static 'recipes/js/components/Header.js' %}"></script>
 
 	<script src="{% static 'recipes/js/api/Api.js' %}"></script>
-	<script src="{% static 'recipes/singlePage.js' %}"></script>
+	{% if user.is_authenticated %}
+		<script src="{% static 'recipes/singlePage.js' %}"></script>
+	{% else %}
+		<script src="{% static 'recipes/singlePageNotAuth.js' %}"></script>
+	{% endif %}
 {% endblock scripts %}
 

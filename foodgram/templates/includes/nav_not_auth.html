@@ -1,27 +1,32 @@
 <nav class="nav">
 	<div class="nav__container container">
 		<ul class="nav__items list">
-			<li class="nav__item
-				{% if not active_tab %}nav__item_disabled
-				{% elif active_tab == 'Рецепты' %}nav__item_active{% endif %}">
-				<a href="{% url 'index' %}" class="nav__link link">Рецепты</a>
-			</li>
-			<li class="nav__item
-				{% if not active_tab %}nav__item_disabled
-				{% elif active_tab == 'Список покупок' %}nav__item_active{% endif %}">
-				<a href="#" class="nav__link link">Список покупок</a>
-				{% if added_recipes_count %}
+			{% if not active_tab %}
+				<li class="nav__item nav__item_disabled">
+					<a class="nav__link link">Рецепты</a>
+				</li>
+			{% elif active_tab == 'Рецепты' %}
+				<li class="nav__item nav__item_active">
+					<a href="{% url 'index' %}" class="nav__link link">Рецепты</a>
+				</li>
+			{% endif %}
+			{% if not active_tab %}
+				<li class="nav__item nav__item_disabled">
+					<a class="nav__link link">Список покупок</a>
+				</li>
+			{% elif active_tab == 'Список покупок' %}
+				<li class="nav__item nav__item_active">
+					<a href="#" class="nav__link link">Список покупок</a>
 					<span class="badge badge_style_blue nav__badge" id="counter">{{ added_recipes_count }}</span>
-				{% endif %}
-				</a>
-			</li>
+				</li>
+			{% endif %}
 		</ul>
 		<ul class="nav__items list">
 			<li class="nav__item">
-				<a href="#" class="nav__link link">Войти</a>
+				<a href="{% url 'account_login' %}" class="nav__link link">Войти</a>
 			</li>
 			<li class="nav__item">
-				<a href="#" class="button button_style_blue">Создать аккаунт</a>
+				<a href="{% url 'account_signup' %}" class="button button_style_blue">Создать аккаунт</a>
 			</li>
 		</ul>
 	</div>

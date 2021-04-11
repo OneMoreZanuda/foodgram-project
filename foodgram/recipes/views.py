@@ -8,7 +8,7 @@ from django.views.generic import (
 )
 
 from .forms import RecipeForm
-from .models import Preference, Recipe, Tag, User
+from .models import Recipe, Tag, Cook
 from .utils import CachedPaginator
 
 
@@ -44,11 +44,12 @@ class AllRecipesView(RecipeIndex):
         recipes_filtered_by_tags = recipes.filter(
             tags__in=checked_tags).distinct()
 
-        favorites = self.request.user.preferences.values_list(
-            'recipe', flat=True
-        )
-        for recipe in recipes_filtered_by_tags:
-            recipe.is_favorite = recipe.id in favorites
+        if self.request.user.is_authenticated:
+            favorites = self.request.user.favorite_recipes.values_list(
+                'pk', flat=True
+            )
+            for recipe in recipes_filtered_by_tags:
+                recipe.is_favorite = recipe.id in favorites
         return recipes_filtered_by_tags
 
     def get_context_data(self, **kwargs):
@@ -57,12 +58,10 @@ class AllRecipesView(RecipeIndex):
         return context
 
 
-class FavoriteRecipesView(RecipeIndex):
+class FavoriteRecipesView(LoginRequiredMixin, RecipeIndex):
     def get_queryset(self):
         checked_tags = [tag for tag in self.tags if tag.checked]
-        user = self.request.user
-        favorite_recipe_ids = user.preferences.values_list('recipe', flat=True)
-        favorite_recipes = Recipe.objects.filter(id__in=favorite_recipe_ids)
+        favorite_recipes = self.request.user.favorite_recipes
         favorite_recipes_filtered_by_tags = favorite_recipes.filter(
             tags__in=checked_tags
         ).distinct()
@@ -77,7 +76,7 @@ class FavoriteRecipesView(RecipeIndex):
         return context
 
 
-class CreateRecipeView(CreateView):
+class CreateRecipeView(LoginRequiredMixin, CreateView):
     model = Recipe
     form_class = RecipeForm
     template_name = 'recipes/recipe_new.html'
@@ -85,7 +84,7 @@ class CreateRecipeView(CreateView):
     def post(self, request, *args, **kwargs):
         self.object = None
         form = self.get_form()
-        form.instance.author = User.objects.get_or_create(username='deleted')[0]
+        form.instance.author = Cook.objects.get_or_create(username='deleted')[0]
         if form.is_valid():
             return self.form_valid(form)
         else:

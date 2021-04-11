@@ -9,7 +9,7 @@ from . import views
 
 
 urlpatterns = [
-    path('products/', views.FoodProductListView.as_view()),
-    path('favorites/', views.CreatePreferenceView.as_view()),
-    path('favorites/<int:recipe>', views.DestroyPreferenceView.as_view())
+    path('products/', views.get_products),
+    # path('favorites/', views.CreatePreferenceView.as_view()),
+    # path('favorites/<int:recipe>', views.DestroyPreferenceView.as_view())
 ]
