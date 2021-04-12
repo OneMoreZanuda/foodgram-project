@@ -50,7 +50,6 @@ class RecipeForm(forms.ModelForm):
             'tags': {'required': 'Необходимо выбрать минимум 1 тег'}
         }
         widgets = {
-            'tags': forms.CheckboxSelectMultiple(),
             'description': forms.Textarea(),
         }
 

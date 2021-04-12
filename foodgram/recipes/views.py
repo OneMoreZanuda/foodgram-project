@@ -84,7 +84,7 @@ class CreateRecipeView(LoginRequiredMixin, CreateView):
     def post(self, request, *args, **kwargs):
         self.object = None
         form = self.get_form()
-        form.instance.author = Cook.objects.get_or_create(username='deleted')[0]
+        form.instance.author = self.request.user
         if form.is_valid():
             return self.form_valid(form)
         else:
@@ -96,7 +96,7 @@ class CreateRecipeView(LoginRequiredMixin, CreateView):
         return response
 
 
-class UpdateRecipeView(UpdateView):
+class UpdateRecipeView(LoginRequiredMixin, UpdateView):
     model = Recipe
     form_class = RecipeForm
     template_name = 'recipes/recipe_edit.html'
@@ -117,10 +117,13 @@ class RecipeView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        is_favorite_recipe = Preference.objects.filter(
-            user=self.request.user, recipe=self.get_object()
-        ).exists()
-        context['is_favorite_recipe'] = is_favorite_recipe
+        user = self.request.user
+        if user.is_authenticated:
+            recipe = context['recipe']
+            is_favorite_recipe = user.favorite_recipes.filter(
+                pk=recipe.pk
+            ).exists()
+            context['is_favorite_recipe'] = is_favorite_recipe
         return context
 
 

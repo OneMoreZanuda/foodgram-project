@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static users_custom_tags %}
+{% block title %}Выйти{% endblock %}
+{% block link_css %}
+	<link rel="stylesheet" href="{% static 'users/pages/form.css' %}">
+{% endblock %}
+
+{% block content %}
+	<div class="main__header">
+		<h1 class="main__title">Выйти</h1>
+	</div>
+	<div class="custom-center-block">
+		<p class="custom-text-block">Вы уверены, что хотите выйти?</p>
+	</div>
+	<form method="post" action="{% url 'account_logout' %}">
+		{% csrf_token %}
+		<button class="button button_style_blue">Выйти</button>
+		{% if redirect_field_value %}
+			<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+		{% endif %}
+	</form>
+{% endblock %}

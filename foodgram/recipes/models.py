@@ -22,7 +22,9 @@ class Cook(AbstractUser):
 
 
 def get_sentinel_user():
-    return Cook.objects.get_or_create(username='deleted')[0]
+    return Cook.objects.get_or_create(
+        username='deleted', first_name='Удалённый пользователь'
+    )[0]
 
 
 class Tag(models.Model):
@@ -45,6 +47,10 @@ class Tag(models.Model):
         max_length=9, choices=MealType.choices,
         unique=True, default=MealType.LUNCH
     )
+
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
 
     def __str__(self):
         return self.name
@@ -113,22 +119,6 @@ class Ingredient(models.Model):
         unique_together = ('recipe', 'food_product')
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-
-
-# class Preference(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE,
-#                              related_name='preferences')
-#     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
-#                                related_name='preferences_it_belongs_to')
-
-#     class Meta:
-#         verbose_name = 'Избранный рецепт'
-#         verbose_name_plural = 'Избранные рецепты'
-
-
-
-
-
 
 
 # class Subscription(models.Model):
