@@ -24,9 +24,9 @@
 			</div>
 		{% endfor %}
 	</div>
-  {% if page_obj.has_other_pages %}
-	{% include "includes/paginator.html" with items=page_obj paginator=paginator %}
-  {% endif %}
+	{% if page_obj.has_other_pages %}
+		{% include "includes/paginator.html" with items=page_obj paginator=paginator %}
+	{% endif %}
 {% endblock content %}
 
 {% block scripts %}

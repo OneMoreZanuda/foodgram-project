@@ -10,6 +10,11 @@ urlpatterns = [
         name='favorites'
     ),
     path(
+        'subscriptions/',
+        views.SubscriptionsView.as_view(),
+        name='subscriptions'
+    ),
+    path(
         'new/',
         views.CreateRecipeView.as_view(),
         name='recipe_new'
@@ -23,5 +28,5 @@ urlpatterns = [
         '<int:pk>',
         views.RecipeView.as_view(),
         name='recipe'
-    ),
+    ),   
 ]

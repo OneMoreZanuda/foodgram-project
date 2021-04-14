@@ -38,3 +38,18 @@ def exclude_item(dict_, key):
     dict_copy = dict_.copy()
     dict_copy.pop(key, None)
     return dict_copy
+
+
+@register.filter
+def add_correct_recipe_word_form(count):
+    rest100 = count % 100
+    if rest100 in range(11, 15):
+        return f'{count} рецептов'
+
+    rest10 = count % 10
+    if rest10 == 1:
+        return f'{count} рецепт'
+    elif rest10 in range(2, 5):
+        return f'{count} рецепта'
+    else:
+        return f'{count} рецептов'

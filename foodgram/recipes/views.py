@@ -8,7 +8,7 @@ from django.views.generic import (
 )
 
 from .forms import RecipeForm
-from .models import Recipe, Tag, Cook
+from .models import Recipe, Tag, Chef
 from .utils import CachedPaginator
 
 
@@ -76,6 +76,20 @@ class FavoriteRecipesView(LoginRequiredMixin, RecipeIndex):
         return context
 
 
+class SubscriptionsView(LoginRequiredMixin, RecipeIndex):
+    paginator_class = CachedPaginator
+    paginate_by = 6
+    template_name = 'recipes/subscriptions.html'
+
+    def get_queryset(self):
+        return self.request.user.subscriptions.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Мои подписки'
+        return context
+
+
 class CreateRecipeView(LoginRequiredMixin, CreateView):
     model = Recipe
     form_class = RecipeForm
@@ -120,10 +134,16 @@ class RecipeView(DetailView):
         user = self.request.user
         if user.is_authenticated:
             recipe = context['recipe']
+
             is_favorite_recipe = user.favorite_recipes.filter(
                 pk=recipe.pk
             ).exists()
             context['is_favorite_recipe'] = is_favorite_recipe
+
+            is_user_subscribed = user.subscriptions.filter(
+                id=recipe.author.id
+            ).exists()
+            context['is_user_subscribed'] = is_user_subscribed
         return context
 
 

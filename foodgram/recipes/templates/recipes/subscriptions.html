@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Мои подписки{% endblock %}
+{% block link_css %}
+    <link rel="stylesheet" href="{% static 'recipes/pages/myFollow.css' %}">
+{% endblock %}
+
+{% block nav %}
+    {% include "includes/nav.html" with active_tab=page_title added_recipes_count=0 %}
+{% endblock nav %}
+
+{% block content %}
+    {% csrf_token %}
+    <div class="main__header">
+        <h1 class="main__title">{{ page_title }}</h1>
+    </div>
+
+    <div class="card-list">
+        {% for author in page_obj %}
+            {% include "recipes/includes/author_item_preview.html" with author=author%}
+        {% empty %}
+            <div class="custom-center-block">
+                <p class="custom-text-block">Вы не подписаны ни на одного автора</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if page_obj.has_other_pages %}
+        {% include "includes/paginator.html" with items=page_obj paginator=paginator %}
+    {% endif %}
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{% static 'recipes/js/config/config.js' %}"></script>
+    
+    <script src="{% static 'recipes/js/components/MainCards.js' %}"></script>
+    <script src="{% static 'recipes/js/components/MyFollow.js' %}"></script>
+    <script src="{% static 'recipes/js/components/Subscribe.js' %}"></script>
+    <script src="{% static 'recipes/js/components/CardList.js' %}"></script>
+    <script src="{% static 'recipes/js/components/Header.js' %}"></script>
+    
+    <script src="{% static 'recipes/js/api/Api.js' %}"></script>
+    <script src="{% static 'recipes/myFollow.js' %}"></script>
+{% endblock scripts %}

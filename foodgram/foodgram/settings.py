@@ -151,7 +151,7 @@ STATIC_ROOT = BASE_DIR.joinpath("static")
 
 SITE_ID = 1
 
-AUTH_USER_MODEL = 'recipes.Cook'
+AUTH_USER_MODEL = 'recipes.Chef'
 
 # django-allauth settings
 ACCOUNT_AUTHENTICATION_METHOD = "email"

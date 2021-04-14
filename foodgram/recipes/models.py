@@ -13,16 +13,23 @@ from django.utils.text import normalize_newlines
 #     instance.image.delete(False)
 
 
-class Cook(AbstractUser):
+class Chef(AbstractUser):
     favorite_recipes = models.ManyToManyField('Recipe')
+    subscriptions = models.ManyToManyField(
+        'self', symmetrical=False, through='Subscription'
+    )
 
     class Meta(AbstractUser.Meta):
+        ordering = ('first_name',)
         verbose_name = 'Кулинар'
         verbose_name_plural = 'Кулинары'
 
+    # def get_absolute_url(self):
+    #     return reverse('recipe', args=(self.pk,))
+
 
 def get_sentinel_user():
-    return Cook.objects.get_or_create(
+    return Chef.objects.get_or_create(
         username='deleted', first_name='Удалённый пользователь'
     )[0]
 
@@ -74,7 +81,7 @@ class Recipe(models.Model):
         max_length=150, editable=False, default='# not defined #'
     )
     title = models.CharField(max_length=200)
-    author = models.ForeignKey(Cook, on_delete=models.SET(get_sentinel_user),
+    author = models.ForeignKey(Chef, on_delete=models.SET(get_sentinel_user),
                                related_name='recipes')
     # image = models.ImageField(upload_to='recipes/')
     description = models.TextField()
@@ -121,19 +128,16 @@ class Ingredient(models.Model):
         verbose_name_plural = 'Ингредиенты'
 
 
-# class Subscription(models.Model):
-#     subscriber = models.ForeignKey(User, on_delete=models.CASCADE,
-#                                    related_name='subscriptions')
-#     author = models.ForeignKey(User, on_delete=models.CASCADE,
-#                                related_name='subscriptions_to_user')
+class Subscription(models.Model):
+    subscriber = models.ForeignKey(Chef, on_delete=models.CASCADE,
+                                   related_name='subscribers')
+    author = models.ForeignKey(Chef, on_delete=models.CASCADE)
 
-#     class Meta:
-#         unique_together = ('subscriber', 'author')
-#         constraints = [
-#             models.CheckConstraint(
-#                 name='cannot_follow_yourself',
-#                 check=~models.Q(subscriber=models.F('author'))
-#             )
-#         ]
-#         verbose_name = 'Подписка'
-#         verbose_name_plural = 'Подписки'
+    class Meta:
+        unique_together = ('subscriber', 'author')
+        constraints = [
+            models.CheckConstraint(
+                name='cannot_follow_yourself',
+                check=~models.Q(subscriber=models.F('author'))
+            )
+        ]

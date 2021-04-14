@@ -16,7 +16,7 @@
 				</li>
 			{% else %}
 				<li class="nav__item {% if active_tab == 'Мои подписки' %}nav__item_active{% endif %}">
-					<a href="#" class="nav__link link">Мои подписки</a>
+					<a href="{% url 'subscriptions' %}" class="nav__link link">Мои подписки</a>
 				</li>
 			{% endif %}
 			{% if not active_tab %}
