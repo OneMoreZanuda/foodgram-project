@@ -19,9 +19,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path('foodgram/admin/', admin.site.urls),
-    path('', lambda request: redirect('recipes/', permanent=True)),
     path('auth/', include('users.urls')),
-    # path('auth/', include('allauth.urls')),
-    path('recipes/', include('recipes.urls')),
     path('api/', include('api.urls')),
+    path('', include('recipes.urls')),
 ]

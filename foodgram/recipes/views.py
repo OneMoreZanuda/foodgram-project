@@ -58,6 +58,21 @@ class AllRecipesView(RecipeIndex):
         return context
 
 
+class ChefView(RecipeIndex):
+    def get_queryset(self):
+        checked_tags = [tag for tag in self.tags if tag.checked]
+
+        chef_recipes = self.request.user.recipes.all()
+        recipes_filtered_by_tags = chef_recipes.filter(
+            tags__in=checked_tags).distinct()
+
+        return recipes_filtered_by_tags
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = self.request.user.get_full_name()
+        return context
+
 class FavoriteRecipesView(LoginRequiredMixin, RecipeIndex):
     def get_queryset(self):
         checked_tags = [tag for tag in self.tags if tag.checked]

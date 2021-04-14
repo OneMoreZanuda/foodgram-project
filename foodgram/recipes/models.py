@@ -24,8 +24,8 @@ class Chef(AbstractUser):
         verbose_name = 'Кулинар'
         verbose_name_plural = 'Кулинары'
 
-    # def get_absolute_url(self):
-    #     return reverse('recipe', args=(self.pk,))
+    def get_absolute_url(self):
+        return reverse('chef', args=(self.pk,))
 
 
 def get_sentinel_user():
