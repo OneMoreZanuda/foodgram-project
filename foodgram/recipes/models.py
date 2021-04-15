@@ -34,6 +34,21 @@ def get_sentinel_user():
     )[0]
 
 
+class Subscription(models.Model):
+    subscriber = models.ForeignKey(Chef, on_delete=models.CASCADE,
+                                   related_name='subscribers')
+    author = models.ForeignKey(Chef, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('subscriber', 'author')
+        constraints = [
+            models.CheckConstraint(
+                name='cannot_follow_yourself',
+                check=~models.Q(subscriber=models.F('author'))
+            )
+        ]
+
+
 class Tag(models.Model):
     class MealType(models.TextChoices):
         BREAKFAST = 'breakfast', 'Завтрак'
@@ -126,18 +141,3 @@ class Ingredient(models.Model):
         unique_together = ('recipe', 'food_product')
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-
-
-class Subscription(models.Model):
-    subscriber = models.ForeignKey(Chef, on_delete=models.CASCADE,
-                                   related_name='subscribers')
-    author = models.ForeignKey(Chef, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('subscriber', 'author')
-        constraints = [
-            models.CheckConstraint(
-                name='cannot_follow_yourself',
-                check=~models.Q(subscriber=models.F('author'))
-            )
-        ]

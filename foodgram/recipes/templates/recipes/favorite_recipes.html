@@ -1,0 +1,10 @@
+{% extends "recipes/recipe_list.html" %}
+{% block title %}Избранное{% endblock %}
+
+{% block nav %}
+	{% include "includes/nav.html" with active_tab='Избранное' added_recipes_count=4 %}
+{% endblock nav %}
+
+{% block header_title %}Избранное{% endblock header_title %}
+
+{% block message_for_empty %}В вашем списке избранного нет рецептов с хотя бы одним из выбранных тегов{% endblock %}

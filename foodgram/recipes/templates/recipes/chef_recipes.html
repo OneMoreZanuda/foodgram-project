@@ -1,0 +1,41 @@
+{% extends "recipes/recipe_list.html" %}
+{% load static %}
+{% block title %}{{ author.get_full_name }}{% endblock %}
+
+{% block nav %}
+	{% include "includes/nav.html" with active_tab='Рецепты' added_recipes_count=4 %}
+{% endblock nav %}
+
+{% block header_title %}{{ author.get_full_name }}{% endblock header_title %}
+
+{% block subscribe_button %}
+	{% if user.is_authenticated and user.id != author.id %}
+		{% if not is_user_subscribed %}
+			<div class="author-subscribe" data-author="{{ author.id }}">
+				<p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></p>
+			</div>
+		{% else %}
+			<div class="author-subscribe" data-author="{{ author.id }}">
+				<p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe">Отписаться от автора</button></p>
+			</div>
+		{% endif %}
+	{% endif %}
+{% endblock subscribe_button %}
+
+{% block message_for_empty %}У этого автора нет рецептов с хотя бы одним из выбранных тегов{% endblock %}
+
+{% block scripts %}
+	<script src="{% static 'recipes/js/components/MainCards.js' %}"></script>
+	
+	<script src="{% static 'recipes/js/components/Purchases.js' %}"></script>
+	<script src="{% static 'recipes/js/components/Favorites.js' %}"></script>
+	<script src="{% static 'recipes/js/components/Subscribe.js' %}"></script>
+	
+	<script src="{% static 'recipes/js/config/config.js' %}"></script>
+	<script src="{% static 'recipes/js/components/AuthorRecipe.js' %}"></script>
+	<script src="{% static 'recipes/js/components/Header.js' %}"></script>
+	
+	<script src="{% static 'recipes/js/api/Api.js' %}"></script>
+  <script src="{% static 'recipes/authorRecipe.js' %}"></script>
+{% endblock scripts %}
+

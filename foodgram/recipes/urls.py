@@ -16,7 +16,7 @@ urlpatterns = [
     ),
     path(
         'chefs/<int:pk>',
-        views.ChefView.as_view(),
+        views.ChefRecipesView.as_view(),
         name='chef'
     ),
     path(
@@ -33,5 +33,5 @@ urlpatterns = [
         'recipes/<int:pk>',
         views.RecipeView.as_view(),
         name='recipe'
-    ),   
+    ),
 ]

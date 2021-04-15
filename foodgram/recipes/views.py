@@ -1,6 +1,7 @@
 from django.http import Http404, HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.functional import cached_property
 from django.views.generic import (
@@ -52,17 +53,20 @@ class AllRecipesView(RecipeIndex):
                 recipe.is_favorite = recipe.id in favorites
         return recipes_filtered_by_tags
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = 'Рецепты'
-        return context
 
+class ChefRecipesView(RecipeIndex):
+    template_name = 'recipes/chef_recipes.html'
 
-class ChefView(RecipeIndex):
+    def get_author(self):
+        author_id = self.kwargs.get('pk')
+        author = get_object_or_404(Chef, pk=author_id)
+        return author
+
     def get_queryset(self):
         checked_tags = [tag for tag in self.tags if tag.checked]
 
-        chef_recipes = self.request.user.recipes.all()
+        author = self.get_author()
+        chef_recipes = author.recipes.all()
         recipes_filtered_by_tags = chef_recipes.filter(
             tags__in=checked_tags).distinct()
 
@@ -70,13 +74,22 @@ class ChefView(RecipeIndex):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['page_title'] = self.request.user.get_full_name()
+        author = self.get_author()
+        is_user_subscribed = self.request.user.subscriptions.filter(
+            pk=author.pk
+        ).exists()
+        context['is_user_subscribed'] = is_user_subscribed
+        context['author'] = author
         return context
 
+
 class FavoriteRecipesView(LoginRequiredMixin, RecipeIndex):
+    template_name = 'recipes/favorite_recipes.html'
+
     def get_queryset(self):
         checked_tags = [tag for tag in self.tags if tag.checked]
-        favorite_recipes = self.request.user.favorite_recipes
+        user = self.request.user
+        favorite_recipes = user.favorite_recipes.select_related('author')
         favorite_recipes_filtered_by_tags = favorite_recipes.filter(
             tags__in=checked_tags
         ).distinct()
@@ -85,10 +98,10 @@ class FavoriteRecipesView(LoginRequiredMixin, RecipeIndex):
             recipe.is_favorite = True
         return favorite_recipes_filtered_by_tags
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = 'Избранное'
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['page_title'] = 'Избранное'
+    #     return context
 
 
 class SubscriptionsView(LoginRequiredMixin, RecipeIndex):
