@@ -1,6 +1,6 @@
-from django.http import Http404, HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.cache import cache
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.functional import cached_property
@@ -10,11 +10,19 @@ from django.views.generic import (
 
 from .forms import RecipeForm
 from .models import Recipe, Tag, Chef
-from .utils import CachedPaginator
+
+
+class AuthorshipRequired(UserPassesTestMixin):
+    permission_denied_message = ('Вы должны быть автором рецепта, чтобы '
+                                 'иметь возможность редактировать или '
+                                 'удалить его')
+
+    def test_func(self):
+        recipe = self.get_object()
+        return recipe.author == self.request.user
 
 
 class RecipeIndex(ListView):
-    paginator_class = CachedPaginator
     paginate_by = 6
 
     def get_context_data(self, **kwargs):
@@ -36,6 +44,29 @@ class RecipeIndex(ListView):
             tags.append(tag)
         return tags
 
+    def mark_favorite(self, queryset):
+        if not self.request.user.is_authenticated:
+            return
+
+        favorites = self.request.user.favorite_recipes.values_list(
+            'id', flat=True
+        )
+        favorites_set = set(favorites)
+        for recipe in queryset:
+            recipe.is_favorite = recipe.id in favorites_set
+
+    def mark_added_to_cart(self, queryset):
+        if self.request.user.is_authenticated:
+            purchases = self.request.user.purchases.values_list(
+                'id', flat=True
+            )
+        else:
+            purchases = self.request.session.get('purchases', [])
+
+        purchases_set = set(purchases)
+        for recipe in queryset:
+            recipe.is_recipe_in_cart = recipe.id in purchases_set
+
 
 class AllRecipesView(RecipeIndex):
     def get_queryset(self):
@@ -45,41 +76,39 @@ class AllRecipesView(RecipeIndex):
         recipes_filtered_by_tags = recipes.filter(
             tags__in=checked_tags).distinct()
 
-        if self.request.user.is_authenticated:
-            favorites = self.request.user.favorite_recipes.values_list(
-                'pk', flat=True
-            )
-            for recipe in recipes_filtered_by_tags:
-                recipe.is_favorite = recipe.id in favorites
+        self.mark_favorite(recipes_filtered_by_tags)
+        self.mark_added_to_cart(recipes_filtered_by_tags)
         return recipes_filtered_by_tags
 
 
 class ChefRecipesView(RecipeIndex):
     template_name = 'recipes/chef_recipes.html'
 
-    def get_author(self):
-        author_id = self.kwargs.get('pk')
-        author = get_object_or_404(Chef, pk=author_id)
-        return author
+    @cached_property
+    def chef(self):
+        chef_id = self.kwargs.get('id')
+        chef = get_object_or_404(Chef, id=chef_id)
+        return chef
 
     def get_queryset(self):
         checked_tags = [tag for tag in self.tags if tag.checked]
 
-        author = self.get_author()
-        chef_recipes = author.recipes.all()
-        recipes_filtered_by_tags = chef_recipes.filter(
+        chef_recipes = self.chef.recipes.all()
+        chef_recipes_filtered_by_tags = chef_recipes.filter(
             tags__in=checked_tags).distinct()
 
-        return recipes_filtered_by_tags
+        self.mark_favorite(chef_recipes_filtered_by_tags)
+        self.mark_added_to_cart(chef_recipes_filtered_by_tags)
+        return chef_recipes_filtered_by_tags
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        author = self.get_author()
-        is_user_subscribed = self.request.user.subscriptions.filter(
-            pk=author.pk
-        ).exists()
-        context['is_user_subscribed'] = is_user_subscribed
-        context['author'] = author
+        if self.request.user.is_authenticated:
+            is_user_subscribed = self.request.user.subscriptions.filter(
+                id=self.chef.id
+            ).exists()
+            context['is_user_subscribed'] = is_user_subscribed
+        context['chef'] = self.chef
         return context
 
 
@@ -96,26 +125,23 @@ class FavoriteRecipesView(LoginRequiredMixin, RecipeIndex):
 
         for recipe in favorite_recipes_filtered_by_tags:
             recipe.is_favorite = True
+        self.mark_added_to_cart(favorite_recipes_filtered_by_tags)
         return favorite_recipes_filtered_by_tags
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['page_title'] = 'Избранное'
-    #     return context
 
 
 class SubscriptionsView(LoginRequiredMixin, RecipeIndex):
-    paginator_class = CachedPaginator
-    paginate_by = 6
     template_name = 'recipes/subscriptions.html'
 
     def get_queryset(self):
         return self.request.user.subscriptions.all()
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = 'Мои подписки'
-        return context
+
+class PurchasesView(ListView):
+    template_name = 'recipes/purchases.html'
+    context_object_name = 'purchases'
+
+    def get_queryset(self):
+        return self.request.user.purchases.all()
 
 
 class CreateRecipeView(LoginRequiredMixin, CreateView):
@@ -132,39 +158,24 @@ class CreateRecipeView(LoginRequiredMixin, CreateView):
         else:
             return self.form_invalid(form)
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        cache.clear()
-        return response
 
-
-class UpdateRecipeView(LoginRequiredMixin, UpdateView):
+class UpdateRecipeView(LoginRequiredMixin, AuthorshipRequired, UpdateView):
     model = Recipe
     form_class = RecipeForm
     template_name = 'recipes/recipe_edit.html'
 
-    # def dispatch(self, request, *args, **kwargs):
-    #     recipe = self.get_object()
-    #     if self.recipe.author != request.user:
-    #         raise Forbidden
-
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        cache.clear()
-        return response
-
 
 class RecipeView(DetailView):
-    queryset = Recipe.objects.all()
+    model = Recipe
+    pk_url_kwarg = 'id'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
+        recipe = context['recipe']
         if user.is_authenticated:
-            recipe = context['recipe']
-
             is_favorite_recipe = user.favorite_recipes.filter(
-                pk=recipe.pk
+                id=recipe.id
             ).exists()
             context['is_favorite_recipe'] = is_favorite_recipe
 
@@ -172,8 +183,20 @@ class RecipeView(DetailView):
                 id=recipe.author.id
             ).exists()
             context['is_user_subscribed'] = is_user_subscribed
+
+            is_recipe_in_cart = user.purchases.filter(
+                id=recipe.id
+            ).exists()
+        else:
+            purchases = self.request.session.get('purchases', [])
+            is_recipe_in_cart = recipe.id in purchases
+
+        context['is_recipe_in_cart'] = is_recipe_in_cart
+
         return context
 
 
-class DeleteRecipeView(DeleteView):
-    queryset = Recipe.objects.all()
+class DeleteRecipeView(LoginRequiredMixin, AuthorshipRequired, DeleteView):
+    model = Recipe
+    pk_url_kwarg = 'id'
+    success_url = reverse_lazy('index')

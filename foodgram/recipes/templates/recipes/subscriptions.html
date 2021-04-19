@@ -3,16 +3,17 @@
 {% block title %}Мои подписки{% endblock %}
 {% block link_css %}
     <link rel="stylesheet" href="{% static 'recipes/pages/myFollow.css' %}">
+    <link rel="stylesheet" href="{% static 'recipes/pages/index.css' %}">
 {% endblock %}
 
 {% block nav %}
-    {% include "includes/nav.html" with active_tab=page_title added_recipes_count=0 %}
+    {% include "includes/nav.html" with active_tab='Мои подписки' %}
 {% endblock nav %}
 
 {% block content %}
     {% csrf_token %}
     <div class="main__header">
-        <h1 class="main__title">{{ page_title }}</h1>
+        <h1 class="main__title">Мои подписки</h1>
     </div>
 
     <div class="card-list">
@@ -36,7 +37,6 @@
     <script src="{% static 'recipes/js/components/MainCards.js' %}"></script>
     <script src="{% static 'recipes/js/components/MyFollow.js' %}"></script>
     <script src="{% static 'recipes/js/components/Subscribe.js' %}"></script>
-    <script src="{% static 'recipes/js/components/CardList.js' %}"></script>
     <script src="{% static 'recipes/js/components/Header.js' %}"></script>
     
     <script src="{% static 'recipes/js/api/Api.js' %}"></script>

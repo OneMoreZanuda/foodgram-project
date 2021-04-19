@@ -15,6 +15,7 @@ from django.utils.text import normalize_newlines
 
 class Chef(AbstractUser):
     favorite_recipes = models.ManyToManyField('Recipe')
+    purchases = models.ManyToManyField('Recipe', related_name='buyers')
     subscriptions = models.ManyToManyField(
         'self', symmetrical=False, through='Subscription'
     )

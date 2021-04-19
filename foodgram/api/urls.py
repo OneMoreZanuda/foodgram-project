@@ -29,5 +29,15 @@ urlpatterns = [
         'subscriptions/<int:author_id>',
         views.remove_from_subscriptions,
         name='remove_from_subscriptions'
+    ),
+    path(
+        'purchases/',
+        views.add_to_purchases,
+        name='add_to_purchases'
+    ),
+    path(
+        'purchases/<int:recipe_id>',
+        views.remove_from_purchases,
+        name='remove_from_purchases'
     )
 ]

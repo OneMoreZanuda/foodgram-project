@@ -9,5 +9,5 @@
 
 {% block form_footer %}
 	<button class="button button_style_blue">Сохранить</button>
-	<a style="margin-left: 2.5em" href="#" class="form__ingredient-link">Удалить</a>
+	<a style="margin-left: 2.5em" href="{% url 'recipe_delete' recipe.pk %}" class="form__ingredient-link">Удалить</a>
 {% endblock form_footer %}

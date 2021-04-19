@@ -3,27 +3,15 @@ class Api {
     constructor(apiUrl) {
         this.apiUrl =  apiUrl;
     }
-  getPurchases () {
-    return fetch(`/api/purchases`, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then( e => {
-          if(e.ok) {
-              return e.json()
-          }
-          return Promise.reject(e.statusText)
-      })
-  }
   addPurchases (id) {
-    return fetch(`/api/purchases`, {
+    return fetch(`/api/purchases/`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
       },
       body: JSON.stringify({
-        id: id
+        recipe: id
       })
     })
       .then( e => {
@@ -37,7 +25,8 @@ class Api {
     return fetch(`/api/purchases/${id}`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
       }
     })
       .then( e => {
