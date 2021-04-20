@@ -2,6 +2,7 @@
 {% load static %}
 {% block title %}Рецепты{% endblock %}
 {% block link_css %}
+	<link rel="stylesheet" href="{% static 'recipes/pages/index.css' %}">
 	<link rel="stylesheet" href="{% static 'recipes/pages/shopList.css' %}">
 {% endblock %}
 
@@ -25,9 +26,17 @@
 					</div>
 					<a href="#" class="shopping-list__button link">Удалить</a>
 				</li>
+			{% empty %}
+				<div class="custom-center-block">
+					<p class="custom-text-block">Список покупок пуст</p>
+				</div>
 			{% endfor %}
 		</ul>
-		<a href="#"><button class="button button_style_blue">Скачать список</button></a>
+		{% if purchases %}
+			<a href="{% url 'download_purchases' %}">
+				<button class="button button_style_blue">Скачать список</button>
+			</a>
+		{% endif %}
 	</div>
 {% endblock content %}
 

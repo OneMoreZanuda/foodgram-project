@@ -53,13 +53,13 @@ class Subscription(models.Model):
 class Tag(models.Model):
     class MealType(models.TextChoices):
         BREAKFAST = 'breakfast', 'Завтрак'
-        LUNCH = 'lunch', 'Обед'
-        DINNER = 'dinner', 'Ужин'
+        DINNER = 'dinner', 'Обед'
+        SUPPER = 'supper', 'Ужин'
 
     colors = {
         'breakfast': 'orange',
-        'lunch': 'green',
-        'dinner': 'purple'
+        'dinner': 'green',
+        'supper': 'purple'
     }
 
     @property
@@ -68,7 +68,7 @@ class Tag(models.Model):
 
     name = models.CharField(
         max_length=9, choices=MealType.choices,
-        unique=True, default=MealType.LUNCH
+        unique=True, default=MealType.DINNER
     )
 
     class Meta:

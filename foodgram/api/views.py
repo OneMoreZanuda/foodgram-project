@@ -85,7 +85,7 @@ def remove_from_purchases(request, recipe_id):
         try:
             purchases.remove(recipe.id)
         except ValueError:
-            pass
+            return Response({'success': False})
         else:
             request.session.modified = True
 

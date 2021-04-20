@@ -1,11 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.functional import cached_property
 from django.views.generic import (
-    CreateView, DeleteView, DetailView, ListView, UpdateView
+    CreateView, DeleteView, DetailView, ListView, UpdateView, View
 )
 
 from .forms import RecipeForm
@@ -136,12 +136,61 @@ class SubscriptionsView(LoginRequiredMixin, RecipeIndex):
         return self.request.user.subscriptions.all()
 
 
-class PurchasesView(ListView):
+class GetPurchasesMixin:
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return self.request.user.purchases.all()
+        else:
+            purchases = self.request.session.get('purchases', [])
+            return Recipe.objects.filter(id__in=purchases).all()    
+
+
+class PurchasesView(GetPurchasesMixin, ListView):
     template_name = 'recipes/purchases.html'
     context_object_name = 'purchases'
 
-    def get_queryset(self):
-        return self.request.user.purchases.all()
+
+class DownloadPurchasesList(GetPurchasesMixin, View):
+    def get_file_content(self, recipes):
+        to_buy = {}
+        max_length = 0
+        for recipe in recipes:
+            for ingredient in recipe.ingredient_set.all():
+                product = ingredient.food_product
+                key = f'{product.name}, {product.unit}'
+                to_buy.setdefault(key, 0)
+                to_buy[key] += ingredient.quantity
+                if len(key) > max_length:
+                    max_length = len(key)
+
+        first_column_width = max_length + 15
+        rows = []
+        for product_with_unit, quantity in to_buy.items():
+            rows.append(
+                '{:<{width}}|{:>15}\n'.format(
+                    product_with_unit,
+                    quantity,
+                    width=first_column_width
+                )
+            )
+
+        sep = '-' * (first_column_width + 16) + '\n'
+        return sep.join(rows)
+
+
+    def get(self, request, *args, **kwargs):
+        recipes = self.get_queryset()
+        file_content = self.get_file_content(recipes)
+
+        response = HttpResponse(
+            file_content,
+            content_type='text/plain'
+        )
+        response['Content-Disposition'] = (
+            f'attachment; filename="purchases_list.txt"'
+        )
+
+        return response
 
 
 class CreateRecipeView(LoginRequiredMixin, CreateView):
