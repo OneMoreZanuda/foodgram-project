@@ -128,6 +128,9 @@ REST_FRAMEWORK = {
 }
 
 
+AUTH_USER_MODEL = 'recipes.Chef'
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -146,12 +149,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR.joinpath('static')
+STATICFILES_DIRS = [
+    BASE_DIR.joinpath("common_static"),
+]
 
-STATIC_ROOT = BASE_DIR.joinpath("static")
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR.joinpath('media')
 
 SITE_ID = 1
-
-AUTH_USER_MODEL = 'recipes.Chef'
 
 # django-allauth settings
 ACCOUNT_AUTHENTICATION_METHOD = "email"

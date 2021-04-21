@@ -2,8 +2,8 @@
 {% load static %}
 {% block title %}Рецепты{% endblock %}
 {% block link_css %}
-	<link rel="stylesheet" href="{% static 'recipes/pages/index.css' %}">
-	<link rel="stylesheet" href="{% static 'recipes/pages/shopList.css' %}">
+	<link rel="stylesheet" href="{% static 'pages/index.css' %}">
+	<link rel="stylesheet" href="{% static 'pages/shopList.css' %}">
 {% endblock %}
 
 {% block nav %}
@@ -20,7 +20,9 @@
 			{% for recipe in purchases %}
 				<li class="shopping-list__item" data-id="{{ recipe.id }}">
 					<div class="recipe recipe_reverse">
-						<img src="{% static 'recipes/images/testCardImg.png' %}" alt="Вариант сервировки" class="recipe__image recipe__image_big">
+						{% if recipe.image %}
+							<img src="{{ recipe.image.url }}" alt="Вариант сервировки" class="recipe__image recipe__image_big">
+						{% endif %}
 						<h3 class="recipe__title">{{ recipe.title }}</h3>
 						<p class="recipe__text"><span class="icon-time"></span> {{ recipe.time_for_preparing }} мин.</p>
 					</div>

@@ -8,11 +8,6 @@ from django.urls import reverse
 from django.utils.text import normalize_newlines
 
 
-# @receiver(post_delete, sender=Post)
-# def submission_delete(sender, instance, **kwargs):
-#     instance.image.delete(False)
-
-
 class Chef(AbstractUser):
     favorite_recipes = models.ManyToManyField('Recipe')
     purchases = models.ManyToManyField('Recipe', related_name='buyers')
@@ -26,7 +21,7 @@ class Chef(AbstractUser):
         verbose_name_plural = 'Кулинары'
 
     def get_absolute_url(self):
-        return reverse('chef', args=(self.pk,))
+        return reverse('chef', args=(self.id,))
 
 
 def get_sentinel_user():
@@ -99,11 +94,11 @@ class Recipe(models.Model):
     title = models.CharField(max_length=200)
     author = models.ForeignKey(Chef, on_delete=models.SET(get_sentinel_user),
                                related_name='recipes')
-    # image = models.ImageField(upload_to='recipes/')
     description = models.TextField()
     ingredients = models.ManyToManyField(FoodProduct, through='Ingredient')
     tags = models.ManyToManyField(Tag)
     time_for_preparing = models.PositiveSmallIntegerField()
+    image = models.ImageField(upload_to='recipes/', blank=True, null=True)
     pub_date = models.DateTimeField(editable=False, auto_now_add=True)
 
     class Meta:
@@ -116,7 +111,7 @@ class Recipe(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('recipe', args=(self.pk,))
+        return reverse('recipe', args=(self.id,))
 
     def description_as_list_of_paragraphs(self):
         value = normalize_newlines(self.description)
@@ -131,6 +126,11 @@ def init_original_author_name(sender, instance, *args, **kwargs):
 
     if hasattr(instance, 'author') and instance.author is not None:
         instance._original_author_name = instance.author.username
+
+
+@receiver(post_delete, sender=Recipe)
+def submission_delete(sender, instance, **kwargs):
+    instance.image.delete(False)
 
 
 class Ingredient(models.Model):

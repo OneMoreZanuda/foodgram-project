@@ -45,7 +45,7 @@ class IngredientForm(forms.ModelForm):
 class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
-        fields = ('title', 'tags', 'time_for_preparing', 'description')
+        fields = ('title', 'tags', 'time_for_preparing', 'description', 'image')
         error_messages = {
             'tags': {'required': 'Необходимо выбрать минимум 1 тег'}
         }
@@ -64,7 +64,7 @@ class RecipeForm(forms.ModelForm):
 
         if author_recipes.exclude(pk=self.instance.pk).exists():
             raise ValidationError(
-                'Вы уже создавали рецепт с таким названием',
+                'У вас уже есть рецепт с таким названием',
                 code='invalid'
             )
         return title
@@ -115,10 +115,3 @@ class RecipeForm(forms.ModelForm):
         super()._save_m2m()
         self.instance.ingredients.clear()
         self.instance.ingredient_set.set(self.ingredients, bulk=False)
-        # for ingredient in self.ingredients:
-        #     self.instance.ingredients.add(
-        #         ingredient.food_product,
-        #         through_defaults={
-        #             'quantity': ingredient.quantity
-        #         }
-        #     )

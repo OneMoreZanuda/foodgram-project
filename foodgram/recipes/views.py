@@ -142,7 +142,7 @@ class GetPurchasesMixin:
             return self.request.user.purchases.all()
         else:
             purchases = self.request.session.get('purchases', [])
-            return Recipe.objects.filter(id__in=purchases).all()    
+            return Recipe.objects.filter(id__in=purchases).all()
 
 
 class PurchasesView(GetPurchasesMixin, ListView):
@@ -163,7 +163,7 @@ class DownloadPurchasesList(GetPurchasesMixin, View):
                 if len(key) > max_length:
                     max_length = len(key)
 
-        first_column_width = max_length + 15
+        first_column_width = max_length + 5
         rows = []
         for product_with_unit, quantity in to_buy.items():
             rows.append(
@@ -174,9 +174,8 @@ class DownloadPurchasesList(GetPurchasesMixin, View):
                 )
             )
 
-        sep = '-' * (first_column_width + 16) + '\n'
+        sep = '-' * (first_column_width + 6) + '\n'
         return sep.join(rows)
-
 
     def get(self, request, *args, **kwargs):
         recipes = self.get_queryset()
@@ -187,7 +186,7 @@ class DownloadPurchasesList(GetPurchasesMixin, View):
             content_type='text/plain'
         )
         response['Content-Disposition'] = (
-            f'attachment; filename="purchases_list.txt"'
+            'attachment; filename="purchases_list.txt"'
         )
 
         return response
@@ -210,6 +209,7 @@ class CreateRecipeView(LoginRequiredMixin, CreateView):
 
 class UpdateRecipeView(LoginRequiredMixin, AuthorshipRequired, UpdateView):
     model = Recipe
+    pk_url_kwarg = 'id'
     form_class = RecipeForm
     template_name = 'recipes/recipe_edit.html'
 

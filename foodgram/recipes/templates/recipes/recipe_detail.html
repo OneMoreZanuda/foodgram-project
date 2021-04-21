@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}{{ recipe.title }}{% endblock %}
 {% block link_css %}
-	<link rel="stylesheet" href="{% static 'recipes/pages/single.css' %}">
+	<link rel="stylesheet" href="{% static 'pages/single.css' %}">
 {% endblock %}
 
 {% block nav %}
@@ -12,7 +12,9 @@
 {% block content %}
 	{% csrf_token %}
 	<div class="single-card" data-id="{{ recipe.id }}" data-author="{{ recipe.author.id }}">
-		<img src="{% static 'recipes/images/testCardImg.png' %}" alt="Вариант сервировки" class="single-card__image">
+		{% if recipe.image %}
+			<img src="{{ recipe.image.url }}" alt="Вариант сервировки" class="single-card__image">
+		{% endif %}
 		<div class="single-card__info">
 			<div class="single-card__header-info">
 				<h1 class="single-card__title">{{ recipe.title }}</h1>
