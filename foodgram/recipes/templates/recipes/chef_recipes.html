@@ -1,12 +1,12 @@
 {% extends "recipes/recipe_list.html" %}
 {% load static %}
-{% block title %}{{ chef.get_full_name }}{% endblock %}
+{% block title %}{{ chef }}{% endblock %}
 
 {% block nav %}
 	{% include "includes/nav.html" with active_tab='Рецепты' %}
 {% endblock nav %}
 
-{% block header_title %}{{ chef.get_full_name }}{% endblock header_title %}
+{% block header_title %}{{ chef }}{% endblock header_title %}
 
 {% block subscribe_button %}
 	{% if user.is_authenticated and user.id != chef.id %}

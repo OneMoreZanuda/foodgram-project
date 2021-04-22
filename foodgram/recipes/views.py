@@ -1,15 +1,12 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.functional import cached_property
-from django.views.generic import (
-    CreateView, DeleteView, DetailView, ListView, UpdateView, View
-)
+from django.views import generic
 
 from .forms import RecipeForm
-from .models import Recipe, Tag, Chef
+from .models import Chef, Recipe, Tag
 
 
 class AuthorshipRequired(UserPassesTestMixin):
@@ -22,7 +19,7 @@ class AuthorshipRequired(UserPassesTestMixin):
         return recipe.author == self.request.user
 
 
-class RecipeIndex(ListView):
+class RecipeIndex(generic.ListView):
     paginate_by = 6
 
     def get_context_data(self, **kwargs):
@@ -87,8 +84,7 @@ class ChefRecipesView(RecipeIndex):
     @cached_property
     def chef(self):
         chef_id = self.kwargs.get('id')
-        chef = get_object_or_404(Chef, id=chef_id)
-        return chef
+        return get_object_or_404(Chef, id=chef_id)
 
     def get_queryset(self):
         checked_tags = [tag for tag in self.tags if tag.checked]
@@ -105,7 +101,7 @@ class ChefRecipesView(RecipeIndex):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             is_user_subscribed = self.request.user.subscriptions.filter(
-                id=self.chef.id
+                id=self.chef.id,
             ).exists()
             context['is_user_subscribed'] = is_user_subscribed
         context['chef'] = self.chef
@@ -120,7 +116,7 @@ class FavoriteRecipesView(LoginRequiredMixin, RecipeIndex):
         user = self.request.user
         favorite_recipes = user.favorite_recipes.select_related('author')
         favorite_recipes_filtered_by_tags = favorite_recipes.filter(
-            tags__in=checked_tags
+            tags__in=checked_tags,
         ).distinct()
 
         for recipe in favorite_recipes_filtered_by_tags:
@@ -139,18 +135,19 @@ class SubscriptionsView(LoginRequiredMixin, RecipeIndex):
 class GetPurchasesMixin:
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return self.request.user.purchases.all()
+            purchases = self.request.user.purchases.all()
         else:
-            purchases = self.request.session.get('purchases', [])
-            return Recipe.objects.filter(id__in=purchases).all()
+            purchase_ids = self.request.session.get('purchases', [])
+            purchases = Recipe.objects.filter(id__in=purchase_ids).all()
+        return purchases
 
 
-class PurchasesView(GetPurchasesMixin, ListView):
+class PurchasesView(GetPurchasesMixin, generic.ListView):
     template_name = 'recipes/purchases.html'
     context_object_name = 'purchases'
 
 
-class DownloadPurchasesList(GetPurchasesMixin, View):
+class DownloadPurchasesList(GetPurchasesMixin, generic.View):
     def get_file_content(self, recipes):
         to_buy = {}
         max_length = 0
@@ -167,11 +164,11 @@ class DownloadPurchasesList(GetPurchasesMixin, View):
         rows = []
         for product_with_unit, quantity in to_buy.items():
             rows.append(
-                '{:<{width}}|{:>15}\n'.format(
+                '{0:<{width}}|{1:>15}\n'.format(
                     product_with_unit,
                     quantity,
-                    width=first_column_width
-                )
+                    width=first_column_width,
+                ),
             )
 
         sep = '-' * (first_column_width + 6) + '\n'
@@ -183,7 +180,7 @@ class DownloadPurchasesList(GetPurchasesMixin, View):
 
         response = HttpResponse(
             file_content,
-            content_type='text/plain'
+            content_type='text/plain',
         )
         response['Content-Disposition'] = (
             'attachment; filename="purchases_list.txt"'
@@ -192,7 +189,7 @@ class DownloadPurchasesList(GetPurchasesMixin, View):
         return response
 
 
-class CreateRecipeView(LoginRequiredMixin, CreateView):
+class CreateRecipeView(LoginRequiredMixin, generic.CreateView):
     model = Recipe
     form_class = RecipeForm
     template_name = 'recipes/recipe_new.html'
@@ -207,14 +204,15 @@ class CreateRecipeView(LoginRequiredMixin, CreateView):
             return self.form_invalid(form)
 
 
-class UpdateRecipeView(LoginRequiredMixin, AuthorshipRequired, UpdateView):
+class UpdateRecipeView(LoginRequiredMixin, AuthorshipRequired,
+                       generic.UpdateView):
     model = Recipe
     pk_url_kwarg = 'id'
     form_class = RecipeForm
     template_name = 'recipes/recipe_edit.html'
 
 
-class RecipeView(DetailView):
+class RecipeView(generic.DetailView):
     model = Recipe
     pk_url_kwarg = 'id'
 
@@ -224,17 +222,17 @@ class RecipeView(DetailView):
         recipe = context['recipe']
         if user.is_authenticated:
             is_favorite_recipe = user.favorite_recipes.filter(
-                id=recipe.id
+                id=recipe.id,
             ).exists()
             context['is_favorite_recipe'] = is_favorite_recipe
 
             is_user_subscribed = user.subscriptions.filter(
-                id=recipe.author.id
+                id=recipe.author.id,
             ).exists()
             context['is_user_subscribed'] = is_user_subscribed
 
             is_recipe_in_cart = user.purchases.filter(
-                id=recipe.id
+                id=recipe.id,
             ).exists()
         else:
             purchases = self.request.session.get('purchases', [])
@@ -245,7 +243,8 @@ class RecipeView(DetailView):
         return context
 
 
-class DeleteRecipeView(LoginRequiredMixin, AuthorshipRequired, DeleteView):
+class DeleteRecipeView(LoginRequiredMixin, AuthorshipRequired,
+                       generic.DeleteView):
     model = Recipe
     pk_url_kwarg = 'id'
     success_url = reverse_lazy('index')

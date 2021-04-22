@@ -7,46 +7,46 @@ urlpatterns = [
     path(
         'favorites/',
         views.FavoriteRecipesView.as_view(),
-        name='favorites'
+        name='favorites',
     ),
     path(
         'subscriptions/',
         views.SubscriptionsView.as_view(),
-        name='subscriptions'
+        name='subscriptions',
     ),
     path(
         'purchases/',
         views.PurchasesView.as_view(),
-        name='purchases'
+        name='purchases',
     ),
     path(
         'purchases/download',
         views.DownloadPurchasesList.as_view(),
-        name='download_purchases'
+        name='download_purchases',
     ),
     path(
         'chefs/<int:id>',
         views.ChefRecipesView.as_view(),
-        name='chef'
+        name='chef',
     ),
     path(
         'recipes/new/',
         views.CreateRecipeView.as_view(),
-        name='recipe_new'
+        name='recipe_new',
     ),
     path(
         'recipes/<int:id>/edit/',
         views.UpdateRecipeView.as_view(),
-        name='recipe_edit'
+        name='recipe_edit',
     ),
     path(
         'recipes/<int:id>/delete/',
         views.DeleteRecipeView.as_view(),
-        name='recipe_delete'
+        name='recipe_delete',
     ),
     path(
         'recipes/<int:id>',
         views.RecipeView.as_view(),
-        name='recipe'
+        name='recipe',
     ),
 ]

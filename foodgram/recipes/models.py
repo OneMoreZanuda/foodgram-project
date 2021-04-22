@@ -9,10 +9,15 @@ from django.utils.text import normalize_newlines
 
 
 class Chef(AbstractUser):
-    favorite_recipes = models.ManyToManyField('Recipe')
-    purchases = models.ManyToManyField('Recipe', related_name='buyers')
+    favorite_recipes = models.ManyToManyField(
+        'Recipe', verbose_name='Любимые рецепты',
+    )
+    purchases = models.ManyToManyField(
+        'Recipe', related_name='buyers', verbose_name='Покупки',
+    )
     subscriptions = models.ManyToManyField(
-        'self', symmetrical=False, through='Subscription'
+        'self', symmetrical=False, through='Subscription',
+        verbose_name='Подписки',
     )
 
     class Meta(AbstractUser.Meta):
@@ -20,28 +25,35 @@ class Chef(AbstractUser):
         verbose_name = 'Кулинар'
         verbose_name_plural = 'Кулинары'
 
+    def __str__(self):
+        return self.get_full_name()
+
     def get_absolute_url(self):
         return reverse('chef', args=(self.id,))
 
 
 def get_sentinel_user():
     return Chef.objects.get_or_create(
-        username='deleted', first_name='Удалённый пользователь'
+        username='deleted', first_name='Удалённый пользователь',
     )[0]
 
 
 class Subscription(models.Model):
-    subscriber = models.ForeignKey(Chef, on_delete=models.CASCADE,
-                                   related_name='subscribers')
-    author = models.ForeignKey(Chef, on_delete=models.CASCADE)
+    subscriber = models.ForeignKey(
+        Chef, on_delete=models.CASCADE, related_name='subscribers',
+        verbose_name='Подписчик',
+    )
+    author = models.ForeignKey(
+        Chef, on_delete=models.CASCADE, verbose_name='Автор',
+    )
 
     class Meta:
         unique_together = ('subscriber', 'author')
         constraints = [
             models.CheckConstraint(
                 name='cannot_follow_yourself',
-                check=~models.Q(subscriber=models.F('author'))
-            )
+                check=~models.Q(subscriber=models.F('author')),
+            ),
         ]
 
 
@@ -54,7 +66,7 @@ class Tag(models.Model):
     colors = {
         'breakfast': 'orange',
         'dinner': 'green',
-        'supper': 'purple'
+        'supper': 'purple',
     }
 
     @property
@@ -62,8 +74,9 @@ class Tag(models.Model):
         return self.colors[self.name]
 
     name = models.CharField(
+        'Название',
         max_length=9, choices=MealType.choices,
-        unique=True, default=MealType.DINNER
+        unique=True, default=MealType.DINNER,
     )
 
     class Meta:
@@ -71,12 +84,12 @@ class Tag(models.Model):
         verbose_name_plural = 'Теги'
 
     def __str__(self):
-        return self.name
+        return self.get_name_display()
 
 
 class FoodProduct(models.Model):
-    name = models.CharField(max_length=200, primary_key=True)
-    unit = models.CharField(max_length=30)
+    name = models.CharField('Продукт', max_length=200, primary_key=True)
+    unit = models.CharField('Единица измерения', max_length=30)
 
     class Meta:
         ordering = ('name',)
@@ -89,16 +102,25 @@ class FoodProduct(models.Model):
 
 class Recipe(models.Model):
     _original_author_name = models.CharField(
-        max_length=150, editable=False, default='# not defined #'
+        max_length=150, editable=False, default='# not defined #',
     )
-    title = models.CharField(max_length=200)
-    author = models.ForeignKey(Chef, on_delete=models.SET(get_sentinel_user),
-                               related_name='recipes')
-    description = models.TextField()
-    ingredients = models.ManyToManyField(FoodProduct, through='Ingredient')
-    tags = models.ManyToManyField(Tag)
-    time_for_preparing = models.PositiveSmallIntegerField()
-    image = models.ImageField(upload_to='recipes/', blank=True, null=True)
+    title = models.CharField('Название', max_length=200)
+    author = models.ForeignKey(
+        Chef, on_delete=models.SET(get_sentinel_user),
+        related_name='recipes', verbose_name='Автор',
+    )
+    description = models.TextField('Описание')
+    ingredients = models.ManyToManyField(
+        FoodProduct, through='Ingredient', verbose_name='Ингредиенты',
+    )
+    tags = models.ManyToManyField(Tag, verbose_name='Теги')
+    time_for_preparing = models.PositiveSmallIntegerField(
+        'Время приготовления (мин.)',
+    )
+    image = models.ImageField(
+        'Изображение',
+        upload_to='recipes/', blank=True, null=True,
+    )
     pub_date = models.DateTimeField(editable=False, auto_now_add=True)
 
     class Meta:
@@ -134,9 +156,13 @@ def submission_delete(sender, instance, **kwargs):
 
 
 class Ingredient(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    food_product = models.ForeignKey(FoodProduct, on_delete=models.PROTECT)
-    quantity = models.PositiveSmallIntegerField()
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, verbose_name='Рецепт',
+    )
+    food_product = models.ForeignKey(
+        FoodProduct, on_delete=models.PROTECT, verbose_name='Продукт',
+    )
+    quantity = models.PositiveSmallIntegerField('Количество')
 
     class Meta:
         unique_together = ('recipe', 'food_product')

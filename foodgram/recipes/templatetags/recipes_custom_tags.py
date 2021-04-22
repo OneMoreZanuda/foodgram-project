@@ -1,6 +1,6 @@
-from django import template
 from urllib.parse import urlencode
 
+from django import template
 
 register = template.Library()
 
@@ -12,7 +12,7 @@ def field_with_additional_attrs(field, *_, **kwargs):
     return field.as_widget(attrs=attrs)
 
 
-@register.inclusion_tag("recipes/includes/tag_item.html", takes_context=True)
+@register.inclusion_tag('recipes/includes/tag_item.html', takes_context=True)
 def tag_item(context):
     tag = context['tag']
     redirect_request_params = context['request'].GET.copy()

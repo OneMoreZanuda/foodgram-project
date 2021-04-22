@@ -1,9 +1,9 @@
 from collections import Counter
+
 from django import forms
 from django.core.exceptions import ValidationError
 
 from .models import Ingredient, Recipe
-
 
 FOOD_PRODUCT_WIDGET_NAME = 'nameIngredient'
 QUANTITY_WIDGET_NAME = 'valueIngredient'
