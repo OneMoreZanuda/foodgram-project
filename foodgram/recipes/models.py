@@ -97,7 +97,7 @@ class FoodProduct(models.Model):
         verbose_name_plural = 'Продукты'
 
     def __str__(self):
-        return self.name
+        return f'{self.name}, {self.unit}'
 
 
 class Recipe(models.Model):
