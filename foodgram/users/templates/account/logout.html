@@ -10,12 +10,14 @@
 	<div class="main__header">
 		<h1 class="main__title">Выйти</h1>
 	</div>
-	<div class="custom-center-block">
-		<p class="custom-text-block">Вы уверены, что хотите выйти?</p>
-	</div>
 	<form method="post" action="{% url 'account_logout' %}">
 		{% csrf_token %}
-		<button class="button button_style_blue">Выйти</button>
+		<div class="custom-center-block">
+			<p class="custom-text-block">Вы уверены, что хотите выйти?</p>
+			<div class="custom-button-block">
+				<button class="button button_style_blue">Выйти</button>
+			</div>
+		</div>
 		{% if redirect_field_value %}
 			<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
 		{% endif %}
