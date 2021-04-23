@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Ошибка{% endblock %}
+{% block link_css %}
+    <link rel="stylesheet" href="{% static 'pages/index.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="main__header">
+        <h1 class="main__title">{% block header_title %}Ошибка{% endblock %}</h1>
+    </div>
+    <div class="custom-center-block">
+        <p class="custom-text-block">Что-то сломалось, но мы скоро всё починим.</p>
+    </div>
+{% endblock content %}

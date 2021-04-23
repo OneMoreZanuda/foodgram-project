@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Технологии{% endblock %}
+{% block link_css %}
+    <link rel="stylesheet" href="{% static 'pages/index.css' %}">
+    <link rel="stylesheet" href="{% static 'pages/single.css' %}">
+{% endblock %}
+
+{% block nav %}
+    {% include "includes/nav.html" with active_tab='none' %}
+{% endblock nav %}
+
+{% block content %}
+    <div class="main__header">
+        <h1 class="main__title">{% block header_title %}Технологии, использованные при создании сайта{% endblock %}</h1>
+    </div>
+	<div class="single-card__section">
+		<h3 class="single-card__section-title">База данных:</h3>
+		<div class="single-card__items single-card__items_column">
+			<p class=" single-card__section-item">PostgreSQL</p>
+		</div>
+	</div>
+	<div class="single-card__section">
+		<h3 class="single-card__section-title">Фронтенд:</h3>
+		<div class="single-card__items single-card__items_column">
+			<p class=" single-card__section-item">HTML, CSS, JavaScript</p>
+			<p class=" single-card__section-item">Django Templates</p>
+		</div>
+	</div>
+	<div class="single-card__section">
+		<h3 class="single-card__section-title">Бэкенд:</h3>
+		<div class="single-card__items single-card__items_column">
+			<p class=" single-card__section-item">Django</p>
+		</div>
+	</div>
+	<div class="single-card__section">
+		<h3 class="single-card__section-title">Веб-сервер:</h3>
+		<div class="single-card__items single-card__items_column">
+			<p class=" single-card__section-item">Nginx</p>
+		</div>
+	</div>
+	<div class="single-card__section">
+		<h3 class="single-card__section-title">Платформа:</h3>
+		<div class="single-card__items single-card__items_column">
+			<p class=" single-card__section-item">Яндекс.Облако</p>
+		</div>
+	</div>
+	<div class="single-card__section">
+		<h3 class="single-card__section-title">Контроль версий:</h3>
+		<div class="single-card__items single-card__items_column">
+			<p class=" single-card__section-item">Git, Github</p>
+		</div>
+	</div>
+	<div class="single-card__section">
+		<h3 class="single-card__section-title">CI/CD:</h3>
+		<div class="single-card__items single-card__items_column">
+			<p class=" single-card__section-item">Docker, Docker Hub</p>
+			<p class=" single-card__section-item">Git Actions</p>
+		</div>
+	</div>
+	<div class="single-card__section">
+		<h3 class="single-card__section-title">Текстовый редактор:</h3>
+		<div class="single-card__items single-card__items_column">
+			<p class=" single-card__section-item">Sublime Text</p>
+		</div>
+	</div>
+	<div class="single-card__section">
+		<h3 class="single-card__section-title">Разработка:</h3>
+		<div class="single-card__items single-card__items_column">
+			<p class=" single-card__section-item">Бубен, Костыли</p>
+		</div>
+	</div>
+{% endblock content %}

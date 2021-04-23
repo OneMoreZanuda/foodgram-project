@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'users',
     'allauth',
     'allauth.account',
+    'about',
     'api',
     'recipes',
 ]

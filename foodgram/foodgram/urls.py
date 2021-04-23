@@ -23,6 +23,7 @@ handler500 = "misc.views.server_error" # noqa
 
 urlpatterns = [
     path('foodgram/admin/', admin.site.urls),
+    path('about/', include('about.urls', namespace='about')),
     path('auth/', include('users.urls')),
     path('api/', include('api.urls')),
     path('', include('recipes.urls')),

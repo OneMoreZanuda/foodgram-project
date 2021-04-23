@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Страница не найдена{% endblock %}
+{% block link_css %}
+    <link rel="stylesheet" href="{% static 'pages/index.css' %}">
+{% endblock %}
+
+{% block nav %}
+    {% include "includes/nav.html" with active_tab='none'%}
+{% endblock nav %}
+
+{% block content %}
+    <div class="main__header">
+        <h1 class="main__title">{% block header_title %}Страница не найдена{% endblock %}</h1>
+    </div>
+    <div class="custom-center-block">
+        <p class="custom-text-block">Увы, такой страницы нет :(</p>
+        <div class="custom-button-block">
+            <a href="{% url 'index' %}">
+                <button class="button button_style_blue">Перейти на главную</button>
+            </a>
+        </div>
+    </div>
+{% endblock content %}

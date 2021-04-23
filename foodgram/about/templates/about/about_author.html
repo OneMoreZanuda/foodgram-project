@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Об авторе{% endblock %}
+{% block link_css %}
+    <link rel="stylesheet" href="{% static 'pages/index.css' %}">
+{% endblock %}
+
+{% block nav %}
+    {% include "includes/nav.html" with active_tab='none' %}
+{% endblock nav %}
+
+{% block content %}
+    <div class="main__header">
+        <h1 class="main__title">{% block header_title %}Об авторе{% endblock %}</h1>
+    </div>
+    <div class="custom-center-block">
+        <p class="custom-text-block">Автор этого сайта - это человек, который так устал сидеть по ночам после основной работы над этим сайтом, что у него пропало всякое желание креативно заполнять статичные страницы. Может быть, когда-нибудь позже, он доберется до них и напишет здесь что-нибудь толковое. А пока так.</p>
+    </div>
+{% endblock content %}
