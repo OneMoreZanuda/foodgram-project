@@ -21,7 +21,7 @@ class Chef(AbstractUser):
     )
 
     class Meta(AbstractUser.Meta):
-        ordering = ('first_name',)
+        ordering = ('first_name', 'last_name')
         verbose_name = 'Кулинар'
         verbose_name_plural = 'Кулинары'
 

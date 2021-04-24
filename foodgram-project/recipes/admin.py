@@ -38,7 +38,6 @@ class FoodProductAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Chef, ChefAdmin)
-admin.site.register(Ingredient)
 admin.site.register(FoodProduct, FoodProductAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Tag)
