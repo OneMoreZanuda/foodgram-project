@@ -41,6 +41,10 @@ class RecipeIndex(generic.ListView):
             tags.append(tag)
         return tags
 
+    @property
+    def checked_tags(self):
+        return [tag for tag in self.tags if tag.checked]
+
     def mark_favorite(self, queryset):
         if not self.request.user.is_authenticated:
             return
@@ -67,11 +71,9 @@ class RecipeIndex(generic.ListView):
 
 class AllRecipesView(RecipeIndex):
     def get_queryset(self):
-        checked_tags = [tag for tag in self.tags if tag.checked]
-
         recipes = Recipe.objects.select_related('author')
         recipes_filtered_by_tags = recipes.filter(
-            tags__in=checked_tags).distinct()
+            tags__in=self.checked_tags).distinct()
 
         self.mark_favorite(recipes_filtered_by_tags)
         self.mark_added_to_cart(recipes_filtered_by_tags)
@@ -87,11 +89,9 @@ class ChefRecipesView(RecipeIndex):
         return get_object_or_404(Chef, id=chef_id)
 
     def get_queryset(self):
-        checked_tags = [tag for tag in self.tags if tag.checked]
-
         chef_recipes = self.chef.recipes.all()
         chef_recipes_filtered_by_tags = chef_recipes.filter(
-            tags__in=checked_tags).distinct()
+            tags__in=self.checked_tags).distinct()
 
         self.mark_favorite(chef_recipes_filtered_by_tags)
         self.mark_added_to_cart(chef_recipes_filtered_by_tags)
@@ -112,11 +112,10 @@ class FavoriteRecipesView(LoginRequiredMixin, RecipeIndex):
     template_name = 'recipes/favorite_recipes.html'
 
     def get_queryset(self):
-        checked_tags = [tag for tag in self.tags if tag.checked]
         user = self.request.user
         favorite_recipes = user.favorite_recipes.select_related('author')
         favorite_recipes_filtered_by_tags = favorite_recipes.filter(
-            tags__in=checked_tags,
+            tags__in=self.checked_tags,
         ).distinct()
 
         for recipe in favorite_recipes_filtered_by_tags:

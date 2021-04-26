@@ -1,11 +1,10 @@
-from django.conf import settings
-from django.urls import include, path
+from django.urls import path
 
 from . import views
 
 app_name = 'api'
 
-api_urlpatterns = [
+urlpatterns = [
     path('products/', views.get_products, name='get_products'),
     path(
         'favorites/',
@@ -37,11 +36,4 @@ api_urlpatterns = [
         views.remove_from_purchases,
         name='remove_from_purchases',
     ),
-]
-
-default_version = settings.REST_FRAMEWORK.get('DEFAULT_VERSION', 'v1')
-
-urlpatterns = [
-    path('', include((api_urlpatterns, app_name), namespace=default_version)),
-    path('v1/', include((api_urlpatterns, app_name), namespace='v1')),
 ]

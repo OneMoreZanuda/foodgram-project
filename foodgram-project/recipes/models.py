@@ -48,30 +48,24 @@ class Subscription(models.Model):
     )
 
     class Meta:
-        unique_together = ('subscriber', 'author')
         constraints = [
             models.CheckConstraint(
                 name='cannot_follow_yourself',
                 check=~models.Q(subscriber=models.F('author')),
             ),
+            models.UniqueConstraint(
+                fields=['subscriber', 'author'],
+                name='unique_subscription',
+            ),
         ]
 
 
 class Tag(models.Model):
+
     class MealType(models.TextChoices):
         BREAKFAST = 'breakfast', 'Завтрак'
         DINNER = 'dinner', 'Обед'
         SUPPER = 'supper', 'Ужин'
-
-    colors = {
-        'breakfast': 'orange',
-        'dinner': 'green',
-        'supper': 'purple',
-    }
-
-    @property
-    def color(self):
-        return self.colors[self.name]
 
     name = models.CharField(
         'Название',
@@ -79,12 +73,22 @@ class Tag(models.Model):
         unique=True, default=MealType.DINNER,
     )
 
+    colors = {
+        'breakfast': 'orange',
+        'dinner': 'green',
+        'supper': 'purple',
+    }
+
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
     def __str__(self):
         return self.get_name_display()
+
+    @property
+    def color(self):
+        return self.colors[self.name]
 
 
 class FoodProduct(models.Model):
@@ -124,7 +128,12 @@ class Recipe(models.Model):
     pub_date = models.DateTimeField(editable=False, auto_now_add=True)
 
     class Meta:
-        unique_together = ('_original_author_name', 'title')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['_original_author_name', 'title'],
+                name='unique_recipe_titles_for_author',
+            ),
+        ]
         ordering = ('-pub_date',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
@@ -165,6 +174,11 @@ class Ingredient(models.Model):
     quantity = models.PositiveSmallIntegerField('Количество')
 
     class Meta:
-        unique_together = ('recipe', 'food_product')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'food_product'],
+                name='product_is_indicated_once_per_recipe',
+            ),
+        ]
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
