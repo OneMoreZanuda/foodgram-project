@@ -1,8 +1,11 @@
-from django.urls import path
+from django.conf import settings
+from django.urls import include, path
 
 from . import views
 
-urlpatterns = [
+app_name = 'api'
+
+api_urlpatterns = [
     path('products/', views.get_products, name='get_products'),
     path(
         'favorites/',
@@ -10,7 +13,7 @@ urlpatterns = [
         name='add_to_favorites',
     ),
     path(
-        'favorites/<int:recipe_id>',
+        'favorites/<int:recipe_id>/',
         views.remove_from_favorites,
         name='remove_from_favorites',
     ),
@@ -20,7 +23,7 @@ urlpatterns = [
         name='add_to_subscriptions',
     ),
     path(
-        'subscriptions/<int:author_id>',
+        'subscriptions/<int:author_id>/',
         views.remove_from_subscriptions,
         name='remove_from_subscriptions',
     ),
@@ -30,8 +33,15 @@ urlpatterns = [
         name='add_to_purchases',
     ),
     path(
-        'purchases/<int:recipe_id>',
+        'purchases/<int:recipe_id>/',
         views.remove_from_purchases,
         name='remove_from_purchases',
     ),
+]
+
+default_version = settings.REST_FRAMEWORK.get('DEFAULT_VERSION', 'v1')
+
+urlpatterns = [
+    path('', include((api_urlpatterns, app_name), namespace=default_version)),
+    path('v1/', include((api_urlpatterns, app_name), namespace='v1')),
 ]

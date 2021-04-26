@@ -20,12 +20,12 @@ urlpatterns = [
         name='purchases',
     ),
     path(
-        'purchases/download',
+        'purchases/download/',
         views.DownloadPurchasesList.as_view(),
         name='download_purchases',
     ),
     path(
-        'chefs/<int:id>',
+        'chefs/<int:id>/',
         views.ChefRecipesView.as_view(),
         name='chef',
     ),
@@ -45,7 +45,7 @@ urlpatterns = [
         name='recipe_delete',
     ),
     path(
-        'recipes/<int:id>',
+        'recipes/<int:id>/',
         views.RecipeView.as_view(),
         name='recipe',
     ),
