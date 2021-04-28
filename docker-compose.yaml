@@ -26,6 +26,7 @@ services:
     depends_on:
       - db
     environment:
+      - SECRET_KEY=${secret_key}
       - DB_NAME=postgres
       - DB_HOST=db
       - DB_PORT=5432
