@@ -110,7 +110,7 @@ jobs:
         script: |
           cd /home/${{secrets.USER}}/foodgram
           touch .env
-          echo 'secret_key=${{ secrets.SECRET_KEY }}' > .env
+          echo 'secret_key=\"${{ secrets.SECRET_KEY }}\"' > .env
           echo 'postgres_user=${{ secrets.POSTGRES_USER }}' >> .env
           echo 'postgres_password=${{ secrets.POSTGRES_PASSWORD }}' >> .env
           echo 'host_ip=${{ secrets.HOST }}' >> .env
