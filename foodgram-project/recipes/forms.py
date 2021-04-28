@@ -45,7 +45,9 @@ class IngredientForm(forms.ModelForm):
 class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
-        fields = ('title', 'tags', 'time_for_preparing', 'description', 'image')
+        fields = (
+            'title', 'tags', 'time_for_preparing', 'description', 'image',
+        )
         error_messages = {
             'tags': {'required': 'Необходимо выбрать минимум 1 тег'}
         }
