@@ -1,0 +1,47 @@
+version: '3.8'
+ 
+volumes:
+  postgres_data:
+  static_data:
+  media_data:
+
+services:
+  db:
+    image: postgres:12.4
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${postgres_user}
+      - POSTGRES_PASSWORD=${postgres_password}
+
+  web:
+    image: leshkakocheregka/foodgram:latest
+    container_name: web
+    restart: always
+    volumes:
+      - static_data:/code/static
+      - media_data:/code/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_NAME=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - POSTGRES_USER=${postgres_user}
+      - POSTGRES_PASSWORD=${postgres_password}
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - static_data:/usr/share/nginx/html/static
+      - media_data:/usr/share/nginx/html/media
+      - ./nginx:/etc/nginx/templates
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+    environment:
+      - HOST_IP=${host_ip}
+
