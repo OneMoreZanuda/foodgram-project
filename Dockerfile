@@ -1,4 +1,6 @@
 FROM python:3.8.5
+RUN mkdir /fixtures
+COPY fixtures /fixtures
 WORKDIR /code
 COPY requirements.txt .
 RUN pip install -r requirements.txt
