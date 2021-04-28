@@ -27,6 +27,7 @@ services:
       - db
     environment:
       - SECRET_KEY=${secret_key}
+      - HOST_IP=${host_ip}
       - DB_NAME=postgres
       - DB_HOST=db
       - DB_PORT=5432
