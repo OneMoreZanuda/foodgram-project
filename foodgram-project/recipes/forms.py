@@ -41,6 +41,10 @@ class IngredientForm(forms.ModelForm):
             'food_product': CustomModelChoiceField,
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['food_product'].to_field_name = 'name'
+
 
 class RecipeForm(forms.ModelForm):
     class Meta:
@@ -82,7 +86,7 @@ class RecipeForm(forms.ModelForm):
         self.ingredients = []
         food_products = filter(
             lambda item: item[0].startswith(FOOD_PRODUCT_WIDGET_NAME),
-            self.data.items()
+            self.data.items(),
         )
 
         for key, food_product_name in food_products:
@@ -91,7 +95,7 @@ class RecipeForm(forms.ModelForm):
             quantity = self.data.get(f'{QUANTITY_WIDGET_NAME}_{index}', '')
             data = {
                 'food_product': food_product_name,
-                'quantity': quantity
+                'quantity': quantity,
             }
             ingredient_form = IngredientForm(data)
             if ingredient_form.is_valid():

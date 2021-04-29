@@ -10,14 +10,15 @@ from django.utils.text import normalize_newlines
 
 class Chef(AbstractUser):
     favorite_recipes = models.ManyToManyField(
-        'Recipe', verbose_name='Любимые рецепты',
+        'Recipe', verbose_name='Любимые рецепты', blank=True,
     )
     purchases = models.ManyToManyField(
         'Recipe', related_name='buyers', verbose_name='Покупки',
+        blank=True,
     )
     subscriptions = models.ManyToManyField(
         'self', symmetrical=False, through='Subscription',
-        verbose_name='Подписки',
+        verbose_name='Подписки', blank=True,
     )
 
     class Meta(AbstractUser.Meta):
@@ -92,7 +93,9 @@ class Tag(models.Model):
 
 
 class FoodProduct(models.Model):
-    name = models.CharField('Продукт', max_length=200, primary_key=True)
+    name = models.CharField(
+        'Продукт', max_length=200, unique=True, db_index=True
+    )
     unit = models.CharField('Единица измерения', max_length=30)
 
     class Meta:
