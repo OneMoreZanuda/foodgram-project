@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [os.environ.get('HOST_IP'), 'localhost']
 
@@ -128,8 +128,9 @@ MEDIA_ROOT = BASE_DIR.joinpath('media')
 SITE_ID = 1
 
 # django-allauth settings
-ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_USER_DISPLAY = (
     lambda user: user.get_full_name()
 )
