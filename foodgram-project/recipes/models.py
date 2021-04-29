@@ -92,7 +92,7 @@ class Tag(models.Model):
 
 
 class FoodProduct(models.Model):
-    name = models.CharField('Продукт', max_length=200, primary_key=True)
+    name = models.CharField('Продукт', max_length=200, unique=True)
     unit = models.CharField('Единица измерения', max_length=30)
 
     class Meta:
