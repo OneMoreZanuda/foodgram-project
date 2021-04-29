@@ -28,7 +28,11 @@
             {% endif %}
         </ul>
     </div>
-    <div class="card-user__footer">
+
+    <div class="card-user__footer" data-author="{{ author.id }}">
+        <button class="button button_style_light-blue button_size_auto" name="subscribe" data-out>Подписаться на автора</button>
+    </div>
+    <div class="card-user__footer" data-author="{{ author.id }}">
         <button class="button button_style_light-blue button_size_auto" name="subscribe">Отписаться</button>
     </div>
 </div>
