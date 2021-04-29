@@ -1,40 +1,37 @@
 {% load static recipes_custom_tags %}
 <div class="card-list">
     <div class="card-user" data-author="{{ author.id }}">
-    <div class="card-user__header">
-        <h2 class="card-user__title">{{ author }}</h2>
-    </div>
-    <div class="card-user__body">
-        <ul class="card-user__items">
-            {% for recipe in author.recipes.all|slice:"3" %}
-                <li class="card-user__item">
-                    <div class="recipe">
-                        {% if recipe.image %}
-                            <img src="{{ recipe.image.url }}" alt="Вариант сервировки" class="recipe__image">
-                        {% endif %}
-                        <h3 class="recipe__title">{{ recipe.title }}</h3>
-                        <p class="recipe__text"><span class="icon-time"></span>{{ recipe.time_for_preparing }}</p>
-                    </div>
-                </li>
-            {% empty %}
-                <p>На данный момент у автора нет рецептов</p>
-            {% endfor %}
-            {% if author.recipes.count > 3 %}
-                {% with count=author.recipes.count|add:"-3" %}
-                <li class="card-user__item">
-                    <a href="{{ author.get_absolute_url }}" class="card-user__link link">Еще {{count|add_correct_recipe_word_form}} ...</a>
-                </li>
-                {% endwith %}
-            {% endif %}
-        </ul>
-    </div>
-    {% if False  %}
-        <div class="card-user__footer" data-author="{{ author.id }}">
-            <button class="button button_style_light-blue button_size_auto" name="subscribe" data-out>Подписаться на автора</button>
+        <div class="card-user__header">
+            <h2 class="card-user__title">{{ author }}</h2>
         </div>
-    {% else %}
-        <div class="card-user__footer" data-author="{{ author.id }}">
+        <div class="card-user__body">
+            <ul class="card-user__items">
+                {% for recipe in author.recipes.all|slice:"3" %}
+                    <li class="card-user__item">
+                        <div class="recipe">
+                            {% if recipe.image %}
+                                <img src="{{ recipe.image.url }}" alt="Вариант сервировки" class="recipe__image">
+                            {% endif %}
+                            <h3 class="recipe__title">{{ recipe.title }}</h3>
+                            <p class="recipe__text"><span class="icon-time"></span>{{ recipe.time_for_preparing }}</p>
+                        </div>
+                    </li>
+                {% empty %}
+                    <p>На данный момент у автора нет рецептов</p>
+                {% endfor %}
+                {% if author.recipes.count > 3 %}
+                    {% with count=author.recipes.count|add:"-3" %}
+                    <li class="card-user__item">
+                        <a href="{{ author.get_absolute_url }}" class="card-user__link link">Еще {{count|add_correct_recipe_word_form}} ...</a>
+                    </li>
+                    {% endwith %}
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="card-user__footer">
             <button class="button button_style_light-blue button_size_auto" name="subscribe">Отписаться</button>
         </div>
-    {% endif %}
+        {% endif %}
+    </div>
 </div>
