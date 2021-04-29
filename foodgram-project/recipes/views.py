@@ -163,15 +163,15 @@ class DownloadPurchasesList(GetPurchasesMixin, generic.View):
         rows = []
         for product_with_unit, quantity in to_buy.items():
             rows.append(
-                '{0:<{width}}|{1:>15}\n'.format(
+                '{0:<{width}}|{1:>10}\n'.format(
                     product_with_unit,
                     quantity,
                     width=first_column_width,
                 ),
             )
 
-        sep = '-' * (first_column_width + 6) + '\n'
-        return sep.join(rows)
+        sep = '-' * (first_column_width + 10) + '\n'
+        return sep + sep.join(rows) + sep
 
     def get(self, request, *args, **kwargs):
         recipes = self.get_queryset()
