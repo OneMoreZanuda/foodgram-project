@@ -170,7 +170,7 @@ class DownloadPurchasesList(GetPurchasesMixin, generic.View):
                 ),
             )
 
-        sep = '-' * (first_column_width + 10) + '\n'
+        sep = '-' * (first_column_width + 11) + '\n'
         return sep + sep.join(rows) + sep
 
     def get(self, request, *args, **kwargs):
