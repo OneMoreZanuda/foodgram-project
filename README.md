@@ -1,4 +1,4 @@
-# yamdb_final
+# foodgram
 ![foodgram](https://github.com/OneMoreZanuda/foodgram-project/actions/workflows/main.yml/badge.svg)
 
 # Описание
