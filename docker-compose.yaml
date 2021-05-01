@@ -28,14 +28,14 @@ services:
     environment:
       - SECRET_KEY=${secret_key}
       - HOST_IP=${host_ip}
-      - DB_NAME=postgres
-      - DB_HOST=db
-      - DB_PORT=5432
+      - DB_NAME=${db_name}
+      - DB_HOST=${db_host}
+      - DB_PORT=${db_port}
       - POSTGRES_USER=${postgres_user}
       - POSTGRES_PASSWORD=${postgres_password}
 
   nginx:
-    image: nginx:latest
+    image: nginx:1.19.10
     volumes:
       - static_data:/usr/share/nginx/html/static
       - media_data:/usr/share/nginx/html/media

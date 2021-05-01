@@ -112,9 +112,13 @@ jobs:
           cd /home/${{secrets.USER}}/foodgram
           touch .env
           echo 'secret_key=${{ secrets.SECRET_KEY }}' > .env
+          echo 'host_ip=${{ secrets.HOST }}' >> .env
+          echo 'db_name=${{ secrets.DB_NAME }}' >> .env
+          echo 'db_host=${{ secrets.DB_HOST }}' >> .env
+          echo 'db_port=${{ secrets.DB_PORT }}' >> .env
           echo 'postgres_user=${{ secrets.POSTGRES_USER }}' >> .env
           echo 'postgres_password=${{ secrets.POSTGRES_PASSWORD }}' >> .env
-          echo 'host_ip=${{ secrets.HOST }}' >> .env
+
           mkdir -p nginx
           sudo mv foodgram.conf.template nginx/foodgram.conf.template
           sudo docker-compose up -d db
