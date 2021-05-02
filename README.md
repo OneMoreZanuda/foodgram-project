@@ -14,28 +14,28 @@
 cd Dev\foodgram-project
 ```
 4) Установить переменные окружения. Для этого в файле ".env.template" указать значение перечисленных переменных и сохранить его как ".env";
-4) Запустить контейнер с PostgreSQL:
+5) Запустить контейнер с PostgreSQL:
 ```
 sudo docker-compose up -d db
 ```
-5) Запустить контейнер с основным приложением:
+6) Запустить контейнер с основным приложением:
 ```
 sudo docker-compose up -d web
 ```
-5) Собрать статические файлы в директории static:
+7) Собрать статические файлы в директории static:
 ```
 sudo docker exec web python manage.py collectstatic
 ```
-6) Выполнить миграции:
+8) Выполнить миграции:
 ```
 sudo docker exec web python manage.py makemigrations
 sudo docker exec web python manage.py migrate
 ```
-7) Создать суперпользователя:
+9) Создать суперпользователя:
 ```
 sudo docker exec web python manage.py createsuperuser
 ```
-8) (Опционально) Загрузить в базу данные о продуктах:
+10) (Опционально) Загрузить в базу данные о продуктах:
 ```
 sudo docker exec web python manage.py loaddata /fixtures/fixtures.json
 ```
