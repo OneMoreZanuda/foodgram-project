@@ -8,45 +8,38 @@
  
 Для запуска веб-приложения на локальном сервере необходимо: 
 1) Установить Docker;
-2) Устновить PostgreSQL;
-3) Склонировать репозиторий; 
-4) Открыть терминал и перейти в директорию проекта. Например: 
-``` 
-cd Dev\foodgram-project
-``` 
-5) Выполнить в терминале команды:
+2) Склонировать репозиторий; 
+3) Открыть терминал и перейти в директорию проекта. Например: 
+   ``` 
+   cd Dev\foodgram-project
+   ```
+4) Установить переменные окружения:
+   В файле ".env.template" указать значение перечисленных переменных и сохранить его как ".env";
+4) Запустить контейнер с PostgreSQL:
+   ```
+sudo docker-compose up -d db
+```  
+5) Запустить контейнер с основным приложением:
+   ```
+sudo docker-compose up -d web
 ```
-docker build -t foodgram .
-``` 
- 
-После запуска приложения для создания суперпользователя и загрузки начальных данных в базу необходимо: 
-1) Открыть новое окно терминала (все последующие действия выполняются только в этом окне); 
-2) Вывести список активных докер-контейнеров, выполнив команду: 
-``` 
-docker container list 
-``` 
-3) Скопировать CONTAINER ID контейнера, созданного из образа infra_sp2_web; 
-4) Запустить bash-оболочку, выполнив в терминале команду 
-``` 
-docker exec -it CONTAINER ID bash (вместо CONTAINER ID вставить значение скопированное на предыдущем шаге) 
-``` 
-5) Выполнить миграции: 
-``` 
-python manage.py makemigrations api 
-python manage.py makemigrations users 
-python manage.py makemigrations 
-python manage.py migrate 
-``` 
-6) Запустить процедуру создания суперпользователя с помощью команды: 
-``` 
-python manage.py createsuperuser 
-``` 
-   Далее ввести логин и пароль для создаваемого суперпользователя; 
- 
-7) Для загрузки данных в базу необходимо выполнить команду: 
-``` 
-python manage.py loaddata fixtures.json 
-``` 
+5) Собрать статические файлы в директории static:
+   ```
+sudo docker exec web python manage.py collectstatic
+```
+6) Выполнить миграции:
+   ```
+sudo docker exec web python manage.py makemigrations
+sudo docker exec web python manage.py migrate
+```
+7) Создать суперпользователя:
+   ```
+sudo docker exec web python manage.py createsuperuser
+```
+8) (Опционально) Загрузить в базу данные о продуктах:
+   ```
+sudo docker exec web python manage.py loaddata /fixtures/fixtures.json
+```
 
 # Пример
 Пример развернутого приложения **foodgram** доступен по адресу http://84.252.141.152/
