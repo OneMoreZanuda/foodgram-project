@@ -13,7 +13,7 @@
 ``` 
 cd Dev\foodgram-project
 ```
-4) Установить переменные окружения. Для этого в файле ".env.template" указать значение перечисленных переменных и сохранить его как ".env";
+4) Установить переменные окружения. Для этого в файле .env.template указать значение перечисленных переменных и сохранить его как .env. (Переменной host_ip присвоить значение localhost);
 5) Запустить контейнер с PostgreSQL:
 ```
 sudo docker-compose up -d db
@@ -39,6 +39,9 @@ sudo docker exec web python manage.py createsuperuser
 ```
 sudo docker exec web python manage.py loaddata /fixtures/fixtures.json
 ```
-
+11) Запустить контейнер с nginx
+```
+sudo docker-compose up -d nginx
+```
 # Пример
 Пример развернутого приложения **foodgram** доступен по адресу http://84.252.141.152/
