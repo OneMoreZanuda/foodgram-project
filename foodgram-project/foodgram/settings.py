@@ -139,3 +139,10 @@ ACCOUNT_MAX_EMAIL_ADDRESSES = 2
 ACCOUNT_SESSION_REMEMBER = False
 
 ACCOUNT_FORMS = {'signup': 'users.forms.CustomSignupForm'}
+
+# email settings
+EMAIL_USE_TLS = True
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')

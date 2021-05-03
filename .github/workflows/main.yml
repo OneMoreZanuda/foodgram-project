@@ -118,6 +118,10 @@ jobs:
           echo 'db_port=${{ secrets.DB_PORT }}' >> .env
           echo 'postgres_user=${{ secrets.POSTGRES_USER }}' >> .env
           echo 'postgres_password=${{ secrets.POSTGRES_PASSWORD }}' >> .env
+          echo 'email_host=${{ secrets.EMAIL_HOST }}' >> .env
+          echo 'email_port=${{ secrets.EMAIL_PORT }}' >> .env
+          echo 'email_host_user=${{ secrets.EMAIL_HOST_USER }}' >> .env
+          echo 'email_host_password=${{ secrets.EMAIL_HOST_PASSWORD }}' >> .env
 
           mkdir -p nginx
           sudo mv foodgram.conf.template nginx/foodgram.conf.template
