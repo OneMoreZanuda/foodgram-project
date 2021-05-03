@@ -166,8 +166,8 @@ class DownloadPurchasesList(GetPurchasesMixin, generic.View):
             rows.append(
                 '{0:<{width}}|{1:>10}\n'.format(
                     ', '.join(
-                        product['ingredient__food_product__name'],
-                        product['ingredient__food_product__unit'],
+                        (product['ingredient__food_product__name'],
+                         product['ingredient__food_product__unit']),
                     ),
                     product['quantity'],
                     width=first_column_width,
