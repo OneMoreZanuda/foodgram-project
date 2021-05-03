@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import Sum
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -148,24 +149,27 @@ class PurchasesView(GetPurchasesMixin, generic.ListView):
 
 class DownloadPurchasesList(GetPurchasesMixin, generic.View):
     def get_file_content(self, recipes):
-        to_buy = {}
-        max_length = 0
-        for recipe in recipes:
-            for ingredient in recipe.ingredient_set.all():
-                product = ingredient.food_product
-                key = f'{product.name}, {product.unit}'
-                to_buy.setdefault(key, 0)
-                to_buy[key] += ingredient.quantity
-                if len(key) > max_length:
-                    max_length = len(key)
+        products = Recipe.objects.values(
+            'ingredient__food_product__name',
+            'ingredient__food_product__unit',
+        ).annotate(
+            quantity=Sum('ingredient__quantity'),
+        ).order_by('ingredient__food_product__name')
 
-        first_column_width = max_length + 5
+        max_name_length = max(
+            len(prod['ingredient__food_product__name']) for prod in products
+        )
+
+        first_column_width = max_name_length + 5
         rows = []
-        for product_with_unit, quantity in to_buy.items():
+        for product in products:
             rows.append(
                 '{0:<{width}}|{1:>10}\n'.format(
-                    product_with_unit,
-                    quantity,
+                    ', '.join(
+                        product['ingredient__food_product__name'],
+                        product['ingredient__food_product__unit'],
+                    ),
+                    product['quantity'],
                     width=first_column_width,
                 ),
             )
