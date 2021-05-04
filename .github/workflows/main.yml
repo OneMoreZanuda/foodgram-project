@@ -85,14 +85,23 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         source: "docker-compose.yaml"
         target: "/home/${{secrets.USER}}/foodgram"
-    - name: copy nginx conf template and fixtures
+    - name: copy nginx conf template
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
         key: ${{ secrets.PRIVATE_SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
-        source: "nginx/foodgram.conf.template,fixtures/fixtures.json"
+        source: "foodgram.conf.template"
+        target: "/home/${{secrets.USER}}/foodgram/nginx"
+    - name: copy fixtures
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.PRIVATE_SSH_KEY }}
+        passphrase: ${{ secrets.PASSPHRASE }}
+        source: "fixtures/fixtures.json"
         target: "/home/${{secrets.USER}}/foodgram"
         strip_components: 1
 
